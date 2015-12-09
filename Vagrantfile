@@ -36,6 +36,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           id:    port[':id']
       end
 
+	  # configures synced folders
+	  mounts = node_values['mounts']
+	  mounts.each do |mount|
+	    config.vm.synced_folder mount[':host'], mount[':guest']
+	  end
+	  
       config.vm.hostname = node_name
       config.vm.network :private_network, ip: node_values[':ip']
 

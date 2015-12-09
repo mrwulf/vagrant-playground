@@ -9,7 +9,7 @@
 # Update system first
 sudo yum update -y
 
-if puppet agent --version | grep "3." | grep -v grep 2> /dev/null
+if puppet agent --version | grep " 3." | grep -v grep 2> /dev/null
 then
     echo "Puppet Agent $(puppet agent --version) is already installed. Moving on..."
 else
@@ -49,12 +49,5 @@ else
     sudo puppet agent --test --waitforcert=60
 
     # Optional, install some optional puppet modules on Foreman server to get started...
-    sudo puppet module install -i /etc/puppet/environments/production/modules puppetlabs-ntp
-    sudo puppet module install -i /etc/puppet/environments/production/modules puppetlabs-git
-    sudo puppet module install -i /etc/puppet/environments/production/modules puppetlabs-vcsrepo
-    sudo puppet module install -i /etc/puppet/environments/production/modules garethr-docker
-    sudo puppet module install -i /etc/puppet/environments/production/modules jfryman-nginx
-    sudo puppet module install -i /etc/puppet/environments/production/modules puppetlabs-haproxy
-    sudo puppet module install -i /etc/puppet/environments/production/modules puppetlabs-apache
-    sudo puppet module install -i /etc/puppet/environments/production/modules puppetlabs-java
+    sudo puppet module install -i /etc/puppet/environments/production/modules locp-cassandra
 fi

@@ -2,7 +2,9 @@
   "nodes": {
     "theforeman.example.com": {
       ":ip": "192.168.35.5",
-      "ports": [],
+      "ports": [ {":host": 8443, ":guest": 443, ":id": "foreman-dashboard"} ],
+	  "mounts": [ {":host":  "modules/", ":guest": "/etc/puppet/environments/production/modules"},
+                  {":host":  "manifests/", ":guest": "/etc/puppet/environments/production/manifests"},	  ],
       ":memory": 1024,
       ":box": "puppetlabs/centos-7.0-64-puppet",
       ":bootstrap": "bootstrap-foreman.sh"
@@ -10,6 +12,7 @@
     "agent01.example.com": {
       ":ip": "192.168.35.10",
       "ports": [],
+	  "mounts": [],
       ":memory": 1024,
       ":box": "puppetlabs/centos-7.0-64-puppet",
       ":bootstrap": "bootstrap-node-rhel.sh"
@@ -17,6 +20,7 @@
     "agent02.example.com": {
       ":ip": "192.168.35.20",
       "ports": [],
+	  "mounts": [],
       ":memory": 1024,
       ":box": "puppetlabs/centos-7.0-64-puppet",
       ":bootstrap": "bootstrap-node-rhel.sh"
