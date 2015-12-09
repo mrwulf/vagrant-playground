@@ -44,8 +44,9 @@ else
     sudo firewall-cmd --reload
     sudo systemctl enable firewalld
 
-    # First run the Puppet agent on the Foreman host which will send the first Puppet report to Foreman,
+    # Run the Puppet agent on the Foreman host which will send the first Puppet report to Foreman,
     # automatically creating the host in Foreman's database
+	# Should wait for foreman to be up
     sudo puppet agent --test --waitforcert=60
 
     # Optional, install some optional puppet modules on Foreman server to get started...
