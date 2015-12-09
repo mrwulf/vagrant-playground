@@ -9,7 +9,7 @@
 # Update system first
 sudo yum update -y
 
-if puppet agent --version | grep "3." | grep -v grep 2> /dev/null
+if puppet agent --version | grep " 3." | grep -v grep 2> /dev/null
 then
     echo "Puppet Agent $(puppet agent --version) is already installed. Moving on..."
 else

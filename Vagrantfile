@@ -3,11 +3,10 @@
 
 # Builds single Foreman server and
 # multiple Puppet Agent Nodes using JSON config file
-# Gary A. Stafford - 01/15/2015
-# Modified - 08/19/2015
-
-# read vm and chef configurations from JSON files
+# read vm and configurations from JSON files
 nodes_config = (JSON.parse(File.read("nodes.json")))['nodes']
+workspace_nodes_config = (JSON.parse(File.read("Workspace/nodes.json")))['nodes']
+nodes_config.merge!(workspace_nodes_config)
 
 VAGRANTFILE_API_VERSION = "2"
 
@@ -50,7 +49,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         vb.customize ["modifyvm", :id, "--name", node_name]
       end
 
-      config.vm.provision :shell, :path => node_values[':bootstrap']
+      config.vm.provision :shell, 
+	                      :path => node_values[':bootstrap']
+	  config.vm.provision :shell, 
+						  :inline => "sudo puppet agent --test", 
+						  :run => "always"
+	  
     end
   end
 end

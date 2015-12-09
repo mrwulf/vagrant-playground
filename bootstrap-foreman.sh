@@ -27,8 +27,12 @@ then
 else
     sudo yum -y install epel-release http://yum.theforeman.org/releases/1.9/el7/x86_64/foreman-release.rpm && \
     sudo yum -y install foreman-installer nano nmap-ncat && \
-    sudo foreman-installer
-
+    sudo foreman-installer \
+	  --foreman-admin-password=admin \
+	  --foreman-proxy-puppetrun=true \
+	  --puppet-listen=true 
+	  
+	# --puppet-hiera-config=/hiera-config/hiera.yaml
 
     # Set-up firewall
     # https://www.digitalocean.com/community/tutorials/additional-recommended-steps-for-new-centos-7-servers
@@ -44,11 +48,17 @@ else
     sudo firewall-cmd --reload
     sudo systemctl enable firewalld
 
+	# Enable auto-signing
+	sudo echo "*.example.com" > /etc/puppet/autosign.conf
+	
     # Run the Puppet agent on the Foreman host which will send the first Puppet report to Foreman,
     # automatically creating the host in Foreman's database
 	# Should wait for foreman to be up
     sudo puppet agent --test --waitforcert=60
 
     # Optional, install some optional puppet modules on Foreman server to get started...
-    sudo puppet module install -i /etc/puppet/environments/production/modules locp-cassandra
+    sudo puppet module install -i /etc/puppet/environments/production/mo7dules locp-cassandra
+	
+	# Refresh foreman's class list
+	sudo hammer --username admin --password admin proxy import-classes --id 1
 fi
