@@ -1,0 +1,36 @@
+{
+  "nodes": {
+    "cassandra01.example.com": {
+      ":ip": "192.168.35.10",
+      "ports": [],
+	  "mounts": [],
+      ":memory": 1024,
+      ":box": "puppetlabs/centos-7.0-64-puppet",
+      ":bootstrap": "bootstrap-node-rhel.sh"
+    },
+    "cassandra02.example.com": {
+      ":ip": "192.168.35.11",
+      "ports": [],
+	  "mounts": [],
+      ":memory": 1024,
+      ":box": "puppetlabs/centos-7.0-64-puppet",
+      ":bootstrap": "bootstrap-node-rhel.sh"
+    },
+    "cassandra03.example.com": {
+      ":ip": "192.168.35.12",
+      "ports": [],
+	  "mounts": [],
+      ":memory": 1024,
+      ":box": "puppetlabs/centos-7.0-64-puppet",
+      ":bootstrap": "bootstrap-node-rhel.sh"
+    },
+    "opscenter.example.com": {
+      ":ip": "192.168.35.20",
+      "ports": [],
+	  "mounts": [],
+      ":memory": 1024,
+      ":box": "puppetlabs/centos-7.0-64-puppet",
+      ":bootstrap": "bootstrap-node-rhel.sh"
+    }
+  }
+}
