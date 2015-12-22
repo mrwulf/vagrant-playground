@@ -14,13 +14,18 @@ then
     echo "Puppet Agent $(puppet agent --version) is already installed. Moving on..."
 else
     echo "Puppet Agent $(puppet agent --version) installed. Replacing..."
+
+    sudo service puppet stop
+	sudo killall puppet
     
-    sudo rpm -ivh http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm && \
+    sudo rpm -ivh http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm && \
     sudo yum -y erase puppet-agent && \
     sudo rm -f /etc/yum.repos.d/puppetlabs-pc1.repo && \
     sudo yum clean all && \
     sudo yum -y install puppet nano nmap-ncat
 
+	sudo find /var/lib/puppet/ssl -name ${HOSTNAME}.pem -delete
+	
     # Add agent section to /etc/puppet/puppet.conf
     # Easier to set run interval to 120s for testing (reset to 30m for normal use)
     # https://docs.puppetlabs.com/puppet/3.8/reference/config_about_settings.html
@@ -28,13 +33,13 @@ else
     echo "    server = theforeman.example.com" | sudo tee --append /etc/puppet/puppet.conf 2> /dev/null && \
     echo "    runinterval = 120s" | sudo tee --append /etc/puppet/puppet.conf 2> /dev/null
 
-    sudo service puppet stop
+	sudo puppet agent --test --waitforcert=60
     #sudo service puppet start
     sudo puppet resource service puppet ensure=running enable=true
-    sudo puppet agent --enable
+    #sudo puppet agent --enable
 
     # Unless you have Foreman autosign certs, each agent will hang on this step until you manually
     # sign each cert in the Foreman UI (Infrastrucutre -> Smart Proxies -> Certificates -> Sign)
     # Alternative, run manually on each host, after provisioning is complete...
-    #sudo puppet agent --test --waitforcert=60
+    # sudo puppet agent --test --waitforcert=60
 fi

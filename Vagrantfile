@@ -11,22 +11,25 @@ nodes_config.merge!(workspace_nodes_config)
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  nodes_config.each do |node|
-    node_name   = node[0] # name of node
-    node_values = node[1] # content of node
+  nodes_config.each do |node_name, node_values|
+    #node_name   = node[0] # name of node
+    #node_values = node[1] # content of node
 
     config.vbguest.auto_update = true
     config.vbguest.iso_path = "http://download.virtualbox.org/virtualbox/%{version}/VBoxGuestAdditions_%{version}.iso"
     
-    config.vm.box = node_values[':box']
-
     config.hostmanager.enabled = true
     config.hostmanager.manage_host = true
     config.hostmanager.ignore_private_ip = false
     config.hostmanager.include_offline = true
 
     config.vm.define node_name do |config|
-      # configures all forwarding ports in JSON array
+
+      config.vm.box = node_values[':box']
+      config.vm.hostname = node_name
+      config.vm.network :private_network, ip: node_values[':ip']
+
+  	  # configures all forwarding ports in JSON array
       ports = node_values['ports']
       ports.each do |port|
         config.vm.network :forwarded_port,
@@ -41,9 +44,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	    config.vm.synced_folder mount[':host'], mount[':guest']
 	  end
 	  
-      config.vm.hostname = node_name
-      config.vm.network :private_network, ip: node_values[':ip']
-
       config.vm.provider :virtualbox do |vb|
         vb.customize ["modifyvm", :id, "--memory", node_values[':memory']]
         vb.customize ["modifyvm", :id, "--name", node_name]
@@ -51,9 +51,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       config.vm.provision :shell, 
 	                      :path => node_values[':bootstrap']
-	  config.vm.provision :shell, 
-						  :inline => "sudo puppet agent --test", 
-						  :run => "always"
 	  
     end
   end

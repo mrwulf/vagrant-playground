@@ -57,7 +57,7 @@ else
     sudo puppet agent --test --waitforcert=60
 
     # Optional, install some optional puppet modules on Foreman server to get started...
-    sudo puppet module install -i /etc/puppet/environments/production/mo7dules locp-cassandra
+    # sudo puppet module install -i /etc/puppet/environments/production/modules locp-cassandra
 	
 	# Refresh foreman's class list
 	sudo hammer --username admin --password admin proxy import-classes --id 1
