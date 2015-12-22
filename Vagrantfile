@@ -5,8 +5,7 @@
 # multiple Puppet Agent Nodes using JSON config file
 # read vm and configurations from JSON files
 nodes_config = (JSON.parse(File.read("nodes.json")))['nodes']
-workspace_nodes_config = (JSON.parse(File.read("Workspace/nodes.json")))['nodes']
-nodes_config.merge!(workspace_nodes_config)
+nodes_config.merge!((JSON.parse(File.read("Workspace/nodes.json")))['nodes']) if File.exist?("Workspace/nodes.json")
 
 VAGRANTFILE_API_VERSION = "2"
 
