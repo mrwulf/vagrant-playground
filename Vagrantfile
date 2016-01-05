@@ -14,6 +14,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     node_name   = node[0] # name of node
     node_values = node[1] # content of node
 
+	node_values[':autostart'] = true if node_values[':autostart'].nil?
+
     config.vbguest.auto_update = true
     
     config.hostmanager.enabled = true
@@ -21,12 +23,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.hostmanager.ignore_private_ip = false
     config.hostmanager.include_offline = true
 
-    config.vm.define node_name do |boxconfig|
+    config.vm.define node_name, autostart: node_values[':autostart'] do |boxconfig|
 
       boxconfig.vm.box = node_values[':box']
       boxconfig.vm.hostname = node_name
+	  
       boxconfig.vm.network :private_network, ip: node_values[':ip']
-
+	  
   	  # configures all forwarding ports in JSON array
       ports = node_values['ports']
       ports.each do |port|
