@@ -9,22 +9,17 @@
 # Update system first
 sudo yum update -y
 
-if puppet agent --version | grep " 3." | grep -v grep 2> /dev/null
+if puppet agent --version | grep "^3." > /dev/null 2>&1
 then
     echo "Puppet Agent $(puppet agent --version) is already installed. Moving on..."
 else
     echo "Puppet Agent $(puppet agent --version) installed. Replacing..."
 
-    sudo service puppet stop
-	sudo killall puppet
-    
     sudo rpm -ivh http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm && \
     sudo yum -y erase puppet-agent && \
     sudo rm -f /etc/yum.repos.d/puppetlabs-pc1.repo && \
     sudo yum clean all && \
-    sudo yum -y install puppet nano nmap-ncat
-
-	sudo find /var/lib/puppet/ssl -name ${HOSTNAME}.pem -delete
+    sudo yum -y install puppet
 	
     # Add agent section to /etc/puppet/puppet.conf
     # Easier to set run interval to 120s for testing (reset to 30m for normal use)
@@ -33,9 +28,9 @@ else
     echo "    server = theforeman.example.com" | sudo tee --append /etc/puppet/puppet.conf 2> /dev/null && \
     echo "    runinterval = 120s" | sudo tee --append /etc/puppet/puppet.conf 2> /dev/null
 
-	sudo puppet agent --test --waitforcert=60
+	#sudo puppet agent --test --waitforcert=60
     #sudo service puppet start
-    sudo puppet resource service puppet ensure=running enable=true
+    #sudo puppet resource service puppet ensure=running enable=true
     #sudo puppet agent --enable
 
     # Unless you have Foreman autosign certs, each agent will hang on this step until you manually
