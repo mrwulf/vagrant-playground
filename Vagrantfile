@@ -4,8 +4,16 @@
 # Builds single Foreman server and
 # multiple Puppet Agent Nodes using JSON config file
 # read vm and configurations from JSON files
-nodes_config = (JSON.parse(File.read("nodes.json")))['nodes']
-nodes_config.merge!((JSON.parse(File.read("Workspace/nodes.json")))['nodes']) if File.exist?("Workspace/nodes.json")
+CONFIG_FILE = "nodes.json"
+
+base_config = JSON.parse(File.read(CONFIG_FILE))
+workspace_config = JSON.parse(File.read("Workspace/#{CONFIG_FILE}")) || {}
+
+nodes_config = base_config['nodes'] || {}
+nodes_config.merge!(workspace_config['nodes'])
+
+hostgroup_config = base_config['hostgroups'] || {}
+hostgroup_config.merge!(workspace_config['hostgroups'])
 
 VAGRANTFILE_API_VERSION = "2"
 
@@ -22,7 +30,33 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.hostmanager.manage_host = true
     config.hostmanager.ignore_private_ip = false
     config.hostmanager.include_offline = true
+	
+	# Manage foreman hostgroups
+	if node_name == 'theforeman.example.com' then
+        config.trigger.after :up, :vm => [node_name] do |trigger|
+		  hostgroup_config.each do |hostgroup|
+		    hostgroup_command = "hammer -u admin -p admin hostgroup create --name \"#{hostgroup[0]}\""
+			hostgroup[1].each do |option|
+			  hostgroup_command = "#{hostgroup_command} --#{option[0]} \"#{option[1]}\""
+			end
+			run_remote hostgroup_command
+		  end
+        end
+	else
+	  # Add/Remove nodes from hostgroups
+      if !node_values[':hostgroup'].nil? then
+        config.trigger.after :up, :vm => [node_name] do |trigger|
+		  run "vagrant ssh theforeman.example.com -- -t \"hammer -u admin -p admin host update --name #{node_name} --hostgroup #{node_values[':hostgroup']}\""
+		  run_remote "sudo puppet agent --test || true"
+        end
+      end
 
+      config.trigger.after :destroy, :vm => [node_name] do |trigger|
+        run "vagrant ssh theforeman.example.com -- -t \"hammer -u admin -p admin host delete --name #{node_name}\""
+        run "vagrant ssh theforeman.example.com -- -t \"sudo puppet cert clean #{node_name}\""
+      end
+	end
+	
     config.vm.define node_name, autostart: node_values[':autostart'] do |boxconfig|
 
       boxconfig.vm.box = node_values[':box']

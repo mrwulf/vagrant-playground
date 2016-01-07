@@ -1,10 +1,18 @@
 {
+  "hostgroups": {
+    "cassandra_nodes": {
+	  "puppet-classes": "profiles::cassandra",
+	  "environment": "production"
+	}
+  },
   "nodes": {
     "cassandra01.example.com": {
       ":ip": "192.168.35.10",
       "ports": [],
 	  "mounts": [],
       ":memory": 1024,
+	  ":autostart": false,
+	  ":hostgroup": "cassandra_nodes",
       ":box": "puppetlabs/centos-7.0-64-puppet",
       ":bootstrap": "bootstrap-node-rhel.sh"
     },
@@ -13,6 +21,8 @@
       "ports": [],
 	  "mounts": [],
       ":memory": 1024,
+	  ":autostart": false,
+	  ":hostgroup": "cassandra_nodes",
       ":box": "puppetlabs/centos-7.0-64-puppet",
       ":bootstrap": "bootstrap-node-rhel.sh"
     },
@@ -21,6 +31,8 @@
       "ports": [],
 	  "mounts": [],
       ":memory": 1024,
+	  ":autostart": false,
+	  ":hostgroup": "cassandra_nodes",
       ":box": "puppetlabs/centos-7.0-64-puppet",
       ":bootstrap": "bootstrap-node-rhel.sh"
     },
@@ -29,6 +41,8 @@
       "ports": [],
 	  "mounts": [],
       ":memory": 1024,
+	  ":autostart": false,
+	  ":hostgroup": "cassandra_nodes",
       ":box": "puppetlabs/centos-7.0-64-puppet",
       ":bootstrap": "bootstrap-node-rhel.sh"
     }

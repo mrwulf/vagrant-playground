@@ -32,4 +32,7 @@ else
     # sign each cert in the Foreman UI (Infrastrucutre -> Smart Proxies -> Certificates -> Sign)
     # Alternative, run manually on each host, after provisioning is complete...
     sudo puppet agent --test --waitforcert=60 || true
+    
+	# Enable puppet and make sure the agent is running
+	sudo puppet resource service puppet ensure=running enable=true
 fi
