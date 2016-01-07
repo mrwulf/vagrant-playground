@@ -30,9 +30,8 @@ else
     sudo foreman-installer \
 	  --foreman-admin-password=admin \
 	  --foreman-proxy-puppetrun=true \
-	  --puppet-listen=true 
-	  
-	# --puppet-hiera-config=/hiera-config/hiera.yaml
+	  --puppet-listen=true \
+	  --puppet-hiera-config=/etc/puppet/hieradata/hiera.yaml
 
     # Set-up firewall
     # https://www.digitalocean.com/community/tutorials/additional-recommended-steps-for-new-centos-7-servers

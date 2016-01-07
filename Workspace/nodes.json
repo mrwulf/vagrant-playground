@@ -2,11 +2,15 @@
   "hostgroups": {
     "cassandra_nodes": {
 	  "puppet-classes": "profiles::cassandra",
-	  "environment": "production"
+	  "environment": "production",
+	  "puppet-proxy": "theforeman.example.com"
 	}
   },
   "global-parameters": {
-    "location": "Carlsbad"
+    "location": "Carlsbad",
+	"role": "UNSET",
+	"security_groups": "UNSET",
+	"security_users": "UNSET"
   },
   "nodes": {
     "cassandra01.example.com": {
@@ -16,7 +20,7 @@
       ":memory": 1024,
 	  ":autostart": false,
 	  ":hostgroup": "cassandra_nodes",
-      ":box": "puppetlabs/centos-7.0-64-puppet",
+	  ":box": "local/centos66",
       ":bootstrap": "bootstrap-node-rhel.sh"
     },
     "cassandra02.example.com": {
@@ -26,7 +30,7 @@
       ":memory": 1024,
 	  ":autostart": false,
 	  ":hostgroup": "cassandra_nodes",
-      ":box": "puppetlabs/centos-7.0-64-puppet",
+	  ":box": "local/centos66",
       ":bootstrap": "bootstrap-node-rhel.sh"
     },
     "cassandra03.example.com": {
@@ -36,17 +40,37 @@
       ":memory": 1024,
 	  ":autostart": false,
 	  ":hostgroup": "cassandra_nodes",
-      ":box": "puppetlabs/centos-7.0-64-puppet",
+	  ":box": "local/centos66",
       ":bootstrap": "bootstrap-node-rhel.sh"
     },
-    "opscenter.example.com": {
-      ":ip": "192.168.35.20",
+    "cassandra04.example.com": {
+      ":ip": "192.168.35.13",
       "ports": [],
 	  "mounts": [],
       ":memory": 1024,
 	  ":autostart": false,
 	  ":hostgroup": "cassandra_nodes",
-      ":box": "puppetlabs/centos-7.0-64-puppet",
+	  ":box": "local/centos66",
+      ":bootstrap": "bootstrap-node-rhel.sh"
+    },
+    "cassandra05.example.com": {
+      ":ip": "192.168.35.14",
+      "ports": [],
+	  "mounts": [],
+      ":memory": 1024,
+	  ":autostart": false,
+	  ":hostgroup": "cassandra_nodes",
+	  ":box": "local/centos66",
+      ":bootstrap": "bootstrap-node-rhel.sh"
+    },
+    "cassandra06.example.com": {
+      ":ip": "192.168.35.15",
+      "ports": [],
+	  "mounts": [],
+      ":memory": 1024,
+	  ":autostart": false,
+	  ":hostgroup": "cassandra_nodes",
+	  ":box": "local/centos66",
       ":bootstrap": "bootstrap-node-rhel.sh"
     }
   }

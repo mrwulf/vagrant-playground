@@ -4,16 +4,23 @@
 # Builds single Foreman server and
 # multiple Puppet Agent Nodes using JSON config file
 # read vm and configurations from JSON files
-CONFIG_FILE = "nodes.json"
+CONFIG_FILE = 'nodes.json'
+FOREMAN     = 'theforeman.example.com'
+WORKSPACE   = 'Workspace'
+PUPPET_REPO = "#{WORKSPACE}/puppet/"
+HIERA_REPO  = "#{WORKSPACE}/hiera/"
 
 base_config = JSON.parse(File.read(CONFIG_FILE))
-workspace_config = JSON.parse(File.read("Workspace/#{CONFIG_FILE}")) || {}
+workspace_config = JSON.parse(File.read("#{WORKSPACE}/#{CONFIG_FILE}")) || {}
 
 nodes_config = base_config['nodes'] || {}
 nodes_config.merge!(workspace_config['nodes'])
 
 hostgroup_config = base_config['hostgroups'] || {}
 hostgroup_config.merge!(workspace_config['hostgroups'])
+
+globalparms_config = base_config['global-parameters'] || {}
+globalparms_config.merge!(workspace_config['global-parameters'])
 
 VAGRANTFILE_API_VERSION = "2"
 
@@ -32,7 +39,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.hostmanager.include_offline = true
 	
 	# Manage foreman hostgroups
-	if node_name == 'theforeman.example.com' then
+	if node_name == FOREMAN then
         config.trigger.after :up, :vm => [node_name] do |trigger|
 		  hostgroup_config.each do |hostgroup|
 		    hostgroup_command = "hammer -u admin -p admin hostgroup create --name \"#{hostgroup[0]}\""
@@ -41,19 +48,22 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 			end
 			run_remote hostgroup_command
 		  end
+		  globalparms_config.each do |globalparm|
+		    run_remote "hammer -u admin -p admin global-parameter set --name \"#{globalparm[0]}\" --value \"#{globalparm[1]}\""
+		  end
         end
 	else
 	  # Add/Remove nodes from hostgroups
       if !node_values[':hostgroup'].nil? then
         config.trigger.after :up, :vm => [node_name] do |trigger|
-		  run "vagrant ssh theforeman.example.com -- -t \"hammer -u admin -p admin host update --name #{node_name} --hostgroup #{node_values[':hostgroup']}\""
+		  run "vagrant ssh #{FOREMAN} -- -t \"hammer -u admin -p admin host update --name #{node_name} --hostgroup #{node_values[':hostgroup']}\""
 		  run_remote "sudo puppet agent --test || true"
         end
       end
 
       config.trigger.after :destroy, :vm => [node_name] do |trigger|
-        run "vagrant ssh theforeman.example.com -- -t \"hammer -u admin -p admin host delete --name #{node_name}\""
-        run "vagrant ssh theforeman.example.com -- -t \"sudo puppet cert clean #{node_name}\""
+        run "vagrant ssh #{FOREMAN} -- -t \"hammer -u admin -p admin host delete --name #{node_name}\" || true"
+        run "vagrant ssh #{FOREMAN} -- -t \"sudo puppet cert clean #{node_name}\" || true"
       end
 	end
 	

@@ -3,8 +3,10 @@
     "theforeman.example.com": {
       ":ip": "192.168.35.5",
       "ports": [ {":host": 8443, ":guest": 443, ":id": "foreman-dashboard"} ],
-	  "mounts": [ {":host":  "Workspace/modules/", ":guest": "/etc/puppet/environments/production/modules"},
-                  {":host":  "Workspace/manifests/", ":guest": "/etc/puppet/environments/production/manifests"} ],
+	  "mounts": [ {":host":  "Workspace/puppet/modules/", ":guest": "/etc/puppet/environments/production/modules"},
+                  {":host":  "Workspace/puppet/manifests/", ":guest": "/etc/puppet/environments/production/manifests"},
+                  {":host":  "Workspace/hiera/", ":guest": "/etc/puppet/hieradata"}
+				],
       ":memory": 1024,
       ":box": "puppetlabs/centos-7.0-64-puppet",
       ":bootstrap": "bootstrap-foreman.sh"
