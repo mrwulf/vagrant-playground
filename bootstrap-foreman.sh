@@ -6,6 +6,9 @@
 # Downgrade Puppet on box from 4.x to 3.x for Foreman 1.9 
 # http://theforeman.org/manuals/1.9/index.html#3.1.2PuppetCompatibility
 
+# Choose from 1.9, 1.10, latest, nightly, etc
+DESIRED_FOREMAN_VERSION=latest
+
 # Update system first
 sudo yum update -y
 
@@ -25,7 +28,7 @@ if ps aux | grep "/usr/share/foreman" | grep -v grep 2> /dev/null
 then
     echo "Foreman appears to all already be installed. Exiting..."
 else
-    sudo yum -y install epel-release http://yum.theforeman.org/releases/1.9/el7/x86_64/foreman-release.rpm && \
+    sudo yum -y install epel-release http://yum.theforeman.org/releases/${DESIRED_FOREMAN_VERSION}/el7/x86_64/foreman-release.rpm && \
     sudo yum -y install foreman-installer nano nmap-ncat && \
     sudo foreman-installer \
 	  --foreman-admin-password=admin \
