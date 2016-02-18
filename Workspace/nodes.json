@@ -14,6 +14,11 @@
 	  /*"puppet-classes": "profiles::googlecloudstorage", */
 	  "environment": "production",
 	  "puppet-proxy": "theforeman.example.com"
+	},
+    "data_science": {
+	  "puppet-classes": "profiles::data_science::common",
+	  "environment": "production",
+	  "puppet-proxy": "theforeman.example.com"
 	}
   },
   "global-parameters": {
@@ -24,6 +29,16 @@
 	"vagrant": true
   },
   "nodes": {
+    "datascience.example.com": {
+      ":ip": "192.168.35.10",
+      "ports": [],
+	  "mounts": [],
+      ":memory": 1024,
+	  ":autostart": false,
+	  ":hostgroup": "data_science",
+	  ":box": "local/centos66",
+      ":bootstrap": "bootstrap-node-rhel.sh"
+    },
     "hadoop01.example.com": {
       ":ip": "192.168.36.10",
       "ports": [],
