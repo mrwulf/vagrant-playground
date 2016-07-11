@@ -1,113 +1,82 @@
 {
   "hostgroups": {
     "Cassandra_Vagrant": {
-	  "puppet-classes": "profiles::cassandra repos profiles::filebeat::common",
-	  "environment": "production",
-	  "puppet-proxy": "theforeman.example.com"
-	},
-    "old_vagrant_cassandra_nodes": {
-	  "puppet-classes": "::cassandra repos profiles::filebeat::common",
-	  "environment": "production",
-	  "puppet-proxy": "theforeman.example.com"
-	},
-    "dev_hadoop_nodes": {
-	  /*"puppet-classes": "profiles::googlecloudstorage", */
-	  "environment": "production",
-	  "puppet-proxy": "theforeman.example.com"
-	},
-    "data_science": {
-	  "puppet-classes": "profiles::data_science::common",
-	  "environment": "production",
-	  "puppet-proxy": "theforeman.example.com"
-	}
+      "puppet-classes": "profiles::cassandra",
+      "environment": "production",
+      "puppet-proxy": "theforeman.example.com",
+      "default_node": {
+      }
+    },
+      "old_vagrant_cassandra_nodes": {
+        "puppet-classes": "::cassandra repos profiles::filebeat::common",
+        "environment": "production",
+        "puppet-proxy": "theforeman.example.com"
+    },
+      "dev_hadoop_nodes": {
+        "environment": "production",
+        "puppet-proxy": "theforeman.example.com"
+    },
+      "data_science": {
+        "puppet-classes": "profiles::data_science::common",
+        "environment": "production",
+        "puppet-proxy": "theforeman.example.com"
+    }
   },
   "global-parameters": {
     "location": "Carlsbad",
-	"role": "UNSET",
-	"security_groups": "UNSET",
-	"security_users": "UNSET",
-	"vagrant": true
+    "role": "UNSET",
+    "security_groups": "UNSET",
+    "security_users": "UNSET",
+    "vagrant": true
+  },
+  "default_node": {
+    "ports": [],
+    "mounts": [],
+    ":memory": 1024,
+    ":autostart": false,
+    ":box": "local/centos66",
+    ":bootstrap": "bootstrap-node-rhel.sh"
   },
   "nodes": {
+    "metrics.example.com": {
+      ":ip": "192.168.36.20",
+      ":classes": "profiles::influxdb"
+    },
+    "graph.example.com": {
+      ":ip": "192.168.36.21",
+      ":classes": "profiles::influxdb"
+    },
     "datascience.example.com": {
       ":ip": "192.168.35.10",
-      "ports": [],
-	  "mounts": [],
-      ":memory": 1024,
-	  ":autostart": false,
-	  ":hostgroup": "data_science",
-	  ":box": "local/centos66",
-      ":bootstrap": "bootstrap-node-rhel.sh"
+      ":hostgroup": "data_science"
     },
     "hadoop01.example.com": {
       ":ip": "192.168.36.10",
-      "ports": [],
-	  "mounts": [],
-      ":memory": 1024,
-	  ":autostart": false,
-	  ":hostgroup": "dev_hadoop_nodes",
-	  ":box": "local/centos66",
-      ":bootstrap": "bootstrap-node-rhel.sh"
+      ":hostgroup": "dev_hadoop_nodes"
     },
     "cassandra01.example.com": {
       ":ip": "192.168.35.10",
-      "ports": [],
-	  "mounts": [],
-      ":memory": 1024,
-	  ":autostart": false,
-	  ":hostgroup": "Cassandra_Vagrant",
-	  ":box": "local/centos66",
-      ":bootstrap": "bootstrap-node-rhel.sh"
+      ":hostgroup": "Cassandra_Vagrant"
     },
     "cassandra02.example.com": {
       ":ip": "192.168.35.11",
-      "ports": [],
-	  "mounts": [],
-      ":memory": 1024,
-	  ":autostart": false,
-	  ":hostgroup": "old_vagrant_cassandra_nodes",
-	  ":box": "local/centos66",
-      ":bootstrap": "bootstrap-node-rhel.sh"
+      ":hostgroup": "Cassandra_Vagrant"
     },
     "cassandra03.example.com": {
       ":ip": "192.168.35.12",
-      "ports": [],
-	  "mounts": [],
-      ":memory": 1024,
-	  ":autostart": false,
-	  ":hostgroup": "Cassandra_Vagrant",
-	  ":box": "local/centos66",
-      ":bootstrap": "bootstrap-node-rhel.sh"
+      ":hostgroup": "Cassandra_Vagrant"
     },
     "cassandra04.example.com": {
       ":ip": "192.168.35.13",
-      "ports": [],
-	  "mounts": [],
-      ":memory": 1024,
-	  ":autostart": false,
-	  ":hostgroup": "Cassandra_Vagrant",
-	  ":box": "local/centos66",
-      ":bootstrap": "bootstrap-node-rhel.sh"
+      ":hostgroup": "Cassandra_Vagrant"
     },
     "cassandra05.example.com": {
       ":ip": "192.168.35.14",
-      "ports": [],
-	  "mounts": [],
-      ":memory": 1024,
-	  ":autostart": false,
-	  ":hostgroup": "Cassandra_Vagrant",
-	  ":box": "local/centos66",
-      ":bootstrap": "bootstrap-node-rhel.sh"
+      ":hostgroup": "Cassandra_Vagrant"
     },
     "cassandra06.example.com": {
       ":ip": "192.168.35.15",
-      "ports": [],
-	  "mounts": [],
-      ":memory": 1024,
-	  ":autostart": false,
-	  ":hostgroup": "Cassandra_Vagrant",
-	  ":box": "local/centos66",
-      ":bootstrap": "bootstrap-node-rhel.sh"
+      ":hostgroup": "Cassandra_Vagrant"
     }
   }
 }
