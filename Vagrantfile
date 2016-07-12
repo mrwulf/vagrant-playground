@@ -25,25 +25,30 @@ def safe_run_remote(command)
   rescue
 end
 
-base_config = JSON.parse(File.read(CONFIG_FILE))
-workspace_config = JSON.parse(File.read("#{WORKSPACE}/#{CONFIG_FILE}")) || {}
+def deep_symbolize(obj)
+    return obj.inject({}){|memo,(k,v)| memo[k.to_sym] =  deep_symbolize(v); memo} if obj.is_a? Hash
+    return obj.inject([]){|memo,v    | memo           << deep_symbolize(v); memo} if obj.is_a? Array
+    return obj
+end
 
-nodes_config = multi_merge( base_config['nodes'], workspace_config['nodes'] )
-hostgroup_config = multi_merge( base_config['hostgroups'], workspace_config['hostgroups'] )
-globalparms_config = multi_merge( base_config['global-parameters'], workspace_config['global-parameters'] )
-defaultnode_config = multi_merge( base_config['default_node'], workspace_config['default_node'] )
+base_config = deep_symbolize JSON.parse(File.read(CONFIG_FILE))
+workspace_config = deep_symbolize JSON.parse(File.read("#{WORKSPACE}/#{CONFIG_FILE}")) || {}
+
+nodes_config = multi_merge( base_config[:nodes], workspace_config[:nodes] )
+hostgroup_config = multi_merge( base_config[:hostgroups], workspace_config[:hostgroups] )
+globalparms_config = multi_merge( base_config[:global_parameters], workspace_config[:global_parameters] )
+defaultnode_config = multi_merge( base_config[:default_node], workspace_config[:default_node] )
 
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   nodes_config.each do |node|
     node_name   = node[0]
-
     node_values = multi_merge( defaultnode_config,
-                               node[1][':hostgroup'] ? hostgroup_config[node[1][':hostgroup']]['default_node'] : {},
+                               node[1][:hostgroup] ? hostgroup_config[node[1][:hostgroup].to_sym][:default_node] : {},
                                node[1] )
 
-    node_values[':autostart'] = true if node_values[':autostart'].nil?
+    node_values[:autostart] = true if node_values[:autostart].nil?
 
     config.vbguest.auto_update = true
 
@@ -57,8 +62,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       config.trigger.after :up, :vm => [node_name] do |trigger|
         hostgroup_config.each do |hostgroup|
           hostgroup_command = "hammer -u admin -p admin hostgroup create --name \"#{hostgroup[0]}\""
+
           hostgroup[1].each do |option|
-            next if option[0] == 'default_node'
+            next if option[0] == :default_node
             hostgroup_command = "#{hostgroup_command} --#{option[0]} \"#{option[1]}\""
           end
           safe_run_remote hostgroup_command
@@ -71,11 +77,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # check that foreman is running... vagrant status | grep theforeman\W*\w+running &&
       # Add/Remove nodes from hostgroups
       config.trigger.after :up, :vm => [node_name] do |trigger|
-        if !node_values[':hostgroup'].nil? then
-          safe_run "vagrant ssh #{FOREMAN} -- -t \"hammer -u admin -p admin host update --name #{node_name} --hostgroup #{node_values[':hostgroup']}\""
+        if !node_values[:hostgroup].nil? then
+          safe_run "vagrant ssh #{FOREMAN} -- -t \"hammer -u admin -p admin host update --name #{node_name} --hostgroup #{node_values[:hostgroup]}\""
         end
-        if node_values[':classes'] then
-          safe_run "vagrant ssh #{FOREMAN} -- -t \"hammer -u admin -p admin host update --name #{node_name} --puppet-classes #{node_values[':classes']}\""
+        if node_values[:classes] then
+          safe_run "vagrant ssh #{FOREMAN} -- -t \"hammer -u admin -p admin host update --name #{node_name} --puppet-classes #{node_values[:classes]}\""
         end
         safe_run_remote "sudo puppet agent --test || true"
       end
@@ -86,32 +92,30 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end
     end
 
-    config.vm.define node_name, autostart: node_values[':autostart'] do |boxconfig|
-      boxconfig.vm.box = node_values[':box']
+    config.vm.define node_name, autostart: node_values[:autostart] do |boxconfig|
+      boxconfig.vm.box = node_values[:box]
       boxconfig.vm.hostname = node_name
-      boxconfig.vm.network "private_network", ip: node_values[':ip']
+      boxconfig.vm.network "private_network", ip: node_values[:ip]
 
       # configures all forwarding ports in JSON array
-      ports = node_values['ports']
-      ports.each do |port|
+      node_values[:ports].each do |port|
         boxconfig.vm.network "forwarded_port",
-          host:  port[':host'],
-          guest: port[':guest'],
-          id:    port[':id']
+          host:  port[:host],
+          guest: port[:guest],
+          id:    port[:id]
       end
 
       # configures synced folders
-      mounts = node_values['mounts']
-      mounts.each do |mount|
-        boxconfig.vm.synced_folder mount[':host'], mount[':guest']
+      node_values[:mounts].each do |mount|
+        boxconfig.vm.synced_folder mount[:host], mount[:guest]
       end
 
       boxconfig.vm.provider :virtualbox do |vb|
-        vb.customize ["modifyvm", :id, "--memory", node_values[':memory']]
+        vb.customize ["modifyvm", :id, "--memory", node_values[:memory]]
         vb.customize ["modifyvm", :id, "--name", node_name]
       end
 
-      boxconfig.vm.provision :shell, :path => node_values[':bootstrap']
+      boxconfig.vm.provision :shell, :path => node_values[:bootstrap]
     end
   end
 end

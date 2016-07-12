@@ -22,61 +22,53 @@
         "puppet-proxy": "theforeman.example.com"
     }
   },
-  "global-parameters": {
+  "global_parameters": {
     "location": "Carlsbad",
     "role": "UNSET",
     "security_groups": "UNSET",
     "security_users": "UNSET",
     "vagrant": true
   },
-  "default_node": {
-    "ports": [],
-    "mounts": [],
-    ":memory": 1024,
-    ":autostart": false,
-    ":box": "local/centos66",
-    ":bootstrap": "bootstrap-node-rhel.sh"
-  },
   "nodes": {
     "metrics.example.com": {
-      ":ip": "192.168.36.20",
-      ":classes": "profiles::influxdb"
+      "ip": "192.168.36.20",
+      "classes": "profiles::influxdb"
     },
     "graph.example.com": {
-      ":ip": "192.168.36.21",
-      ":classes": "profiles::influxdb"
+      "ip": "192.168.36.21",
+      "classes": "profiles::influxdb"
     },
     "datascience.example.com": {
-      ":ip": "192.168.35.10",
-      ":hostgroup": "data_science"
+      "ip": "192.168.35.10",
+      "hostgroup": "data_science"
     },
     "hadoop01.example.com": {
-      ":ip": "192.168.36.10",
-      ":hostgroup": "dev_hadoop_nodes"
+      "ip": "192.168.36.10",
+      "hostgroup": "dev_hadoop_nodes"
     },
     "cassandra01.example.com": {
-      ":ip": "192.168.35.10",
-      ":hostgroup": "Cassandra_Vagrant"
+      "ip": "192.168.35.10",
+      "hostgroup": "Cassandra_Vagrant"
     },
     "cassandra02.example.com": {
-      ":ip": "192.168.35.11",
-      ":hostgroup": "Cassandra_Vagrant"
+      "ip": "192.168.35.11",
+      "hostgroup": "Cassandra_Vagrant"
     },
     "cassandra03.example.com": {
-      ":ip": "192.168.35.12",
-      ":hostgroup": "Cassandra_Vagrant"
+      "ip": "192.168.35.12",
+      "hostgroup": "Cassandra_Vagrant"
     },
     "cassandra04.example.com": {
-      ":ip": "192.168.35.13",
-      ":hostgroup": "Cassandra_Vagrant"
+      "ip": "192.168.35.13",
+      "hostgroup": "Cassandra_Vagrant"
     },
     "cassandra05.example.com": {
-      ":ip": "192.168.35.14",
-      ":hostgroup": "Cassandra_Vagrant"
+      "ip": "192.168.35.14",
+      "hostgroup": "Cassandra_Vagrant"
     },
     "cassandra06.example.com": {
-      ":ip": "192.168.35.15",
-      ":hostgroup": "Cassandra_Vagrant"
+      "ip": "192.168.35.15",
+      "hostgroup": "Cassandra_Vagrant"
     }
   }
 }
