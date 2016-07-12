@@ -3,7 +3,7 @@
 # Run on VM to bootstrap the Foreman server
 # Gary A. Stafford - 01/15/2015
 # Modified - 08/19/2015
-# Downgrade Puppet on box from 4.x to 3.x for Foreman 1.9 
+# Downgrade Puppet on box from 4.x to 3.x for Foreman 1.9
 # http://theforeman.org/manuals/1.9/index.html#3.1.2PuppetCompatibility
 
 # Choose from 1.9, 1.10, latest, nightly, etc
@@ -32,7 +32,6 @@ else
     sudo yum -y install foreman-installer nano nmap-ncat && \
     sudo foreman-installer \
 	  --foreman-admin-password=admin \
-	  --foreman-proxy-puppetrun=true \
 	  --puppet-listen=true \
 	  --puppet-hiera-config=/etc/puppet/hieradata/hiera.yaml
 
@@ -52,7 +51,7 @@ else
 
 	# Enable auto-signing
 	sudo echo "*.example.com" > /etc/puppet/autosign.conf
-	
+
     # Run the Puppet agent on the Foreman host which will send the first Puppet report to Foreman,
     # automatically creating the host in Foreman's database
 	# Should wait for foreman to be up
@@ -60,7 +59,7 @@ else
 
     # Optional, install some optional puppet modules on Foreman server to get started...
     # sudo puppet module install -i /etc/puppet/environments/production/modules locp-cassandra
-	
+
 	# Refresh foreman's class list
 	sudo hammer --username admin --password admin proxy import-classes --id 1
 fi

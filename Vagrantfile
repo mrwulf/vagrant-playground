@@ -30,11 +30,11 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   nodes_config.each do |node|
     node_name   = node[0]
-    node_values = node[1]
-    node_values.merge!(defaultnode_config)
+    node_values = defaultnode_config
     if !node_values[':hostgroup'].nil? && !hostgroup_config[node_values[':hostgroup']]['default_node'].nil? then
       node_values.merge!(hostgroup_config[node_values[':hostgroup']]['default_node'])
     end
+    node_values.merge!(node[1])
 
 	  node_values[':autostart'] = true if node_values[':autostart'].nil?
 
@@ -60,6 +60,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		    end
       end
 	  else
+      # check that foreman is running... vagrant status | grep theforeman\W*\w+running &&
 	    # Add/Remove nodes from hostgroups
       config.trigger.after :up, :vm => [node_name] do |trigger|
         if !node_values[':hostgroup'].nil? then
