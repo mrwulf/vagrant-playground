@@ -7,11 +7,6 @@
       "default_node": {
       }
     },
-      "old_vagrant_cassandra_nodes": {
-        "puppet-classes": "::cassandra repos profiles::filebeat::common",
-        "environment": "production",
-        "puppet-proxy": "theforeman.example.com"
-    },
       "dev_hadoop_nodes": {
         "environment": "production",
         "puppet-proxy": "theforeman.example.com"
