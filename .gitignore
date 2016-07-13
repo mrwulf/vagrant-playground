@@ -90,3 +90,4 @@ build/
 # Workspace
 Workspace/puppet/
 Workspace/hiera/
+Workspace/python/
