@@ -42,11 +42,11 @@ defaultnode_config = multi_merge( base_config[:default_node], workspace_config[:
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  nodes_config.each do |node|
-    node_name   = node[0]
+  nodes_config.each do |node, values|
+    node_name   = node.to_s
     node_values = multi_merge( defaultnode_config,
-                               node[1][:hostgroup] ? hostgroup_config[node[1][:hostgroup].to_sym][:default_node] : {},
-                               node[1] )
+                               values[:hostgroup] ? hostgroup_config[values[:hostgroup].to_sym][:default_node] : {},
+                               values )
 
     node_values[:autostart] = true if node_values[:autostart].nil?
 
@@ -60,17 +60,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Manage foreman hostgroups
     if node_name == FOREMAN then
       config.trigger.after :up, :vm => [node_name] do |trigger|
-        hostgroup_config.each do |hostgroup|
-          hostgroup_command = "hammer -u admin -p admin hostgroup create --name \"#{hostgroup[0]}\""
+        hostgroup_config.each do |hostgroup_name, hostgroup_values|
+          hostgroup_command = "hammer -u admin -p admin hostgroup create --name \"#{hostgroup_name}\""
 
-          hostgroup[1].each do |option|
-            next if option[0] == :default_node
-            hostgroup_command = "#{hostgroup_command} --#{option[0]} \"#{option[1]}\""
+          hostgroup_values.each do |option, value|
+            next if option == :default_node
+            hostgroup_command = "#{hostgroup_command} --#{option} \"#{value}\""
           end
           safe_run_remote hostgroup_command
         end
-        globalparms_config.each do |globalparm|
-          safe_run_remote "hammer -u admin -p admin global-parameter set --name \"#{globalparm[0]}\" --value \"#{globalparm[1]}\""
+        globalparms_config.each do |globalparm, globalvalue|
+          safe_run_remote "hammer -u admin -p admin global-parameter set --name \"#{globalparm}\" --value \"#{globalvalue}\""
         end
       end
     else
