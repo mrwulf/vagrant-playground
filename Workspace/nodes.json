@@ -1,20 +1,24 @@
 {
   "hostgroups": {
     "Cassandra_Vagrant": {
-      "puppet-classes": "profiles::cassandra",
       "environment": "production",
       "puppet-proxy": "theforeman.example.com",
-      "default_node": {
-      }
+      "puppet-classes": "roles",
+      "parameters": { "role": "CASSANDRA" }
     },
-      "dev_hadoop_nodes": {
-        "environment": "production",
-        "puppet-proxy": "theforeman.example.com"
+    "dev_hadoop_nodes": {
+      "environment": "production",
+      "puppet-proxy": "theforeman.example.com"
     },
-      "data_science": {
-        "puppet-classes": "profiles::data_science::common",
-        "environment": "production",
-        "puppet-proxy": "theforeman.example.com"
+    "data_science": {
+      "puppet-classes": "profiles::data_science::common",
+      "environment": "production",
+      "puppet-proxy": "theforeman.example.com"
+    },
+    "Elasticsearch_Vagrant": {
+      "puppet-classes": "roles",
+      "environment": "production",
+      "puppet-proxy": "theforeman.example.com"
     }
   },
   "global_parameters": {
@@ -25,13 +29,85 @@
     "vagrant": true
   },
   "nodes": {
+    "memcached-01.example.com": {
+      "ip": "192.168.36.10",
+      "ports": [ {"host": 11211, "guest": 11211, "id": "interface"} ],
+      "classes": "profiles::memcached"
+    },
+    "memcached-02.example.com": {
+      "ip": "192.168.36.11",
+      "ports": [ {"host": 11311, "guest": 11211, "id": "interface"} ],
+      "classes": "profiles::memcached"
+    },
+    "rabbitmq-01.example.com": {
+      "ip": "192.168.36.15",
+      "ports": [ {"host": 55672, "guest": 55672, "id": "web-gui"},
+                 {"host": 8081, "guest": 80, "id": "web-gui-2"}],
+      "classes": "profiles::rabbitmq"
+    },
+    "rabbitmq-02.example.com": {
+      "ip": "192.168.36.16",
+      "ports": [ {"host": 45672, "guest": 55672, "id": "web-gui"} ],
+      "classes": "profiles::rabbitmq"
+    },
+    "rabbitmq-03.example.com": {
+      "ip": "192.168.36.12",
+      "ports": [ {"host": 35672, "guest": 55672, "id": "web-gui"} ],
+      "classes": "profiles::rabbitmq"
+    },
+    "consul-01.example.com": {
+      "ip": "192.168.36.10",
+      "ports": [ {"host": 8501, "guest": 8500, "id": "web-gui-8500"},
+                 {"host": 8580, "guest": 80, "id": "web-gui-80"},
+                 {"host": 8601, "guest": 8600, "id": "web-gui-8600"},
+                 {"host": 5300, "guest": 53, "id": "dns-53"} ],
+      "hostgroup": "Consul/Vagrant"
+    },
+    "consul-02.example.com": {
+      "ip": "192.168.36.11",
+      "ports": [ {"host": 8502, "guest": 8500, "id": "web-gui"} ],
+      "hostgroup": "Consul/Vagrant"
+    },
+    "consul-03.example.com": {
+      "ip": "192.168.36.12",
+      "ports": [ {"host": 8503, "guest": 8500, "id": "web-gui"} ],
+      "hostgroup": "Consul/Vagrant"
+    },
     "metrics.example.com": {
       "ip": "192.168.36.20",
-      "classes": "profiles::influxdb"
+      "ports": [ {"host": 8083, "guest": 8083, "id": "web-gui"},
+                 {"host": 8086, "guest": 8086, "id": "rest"}     ],
+      "classes": "profiles::influxdb",
+      "host_parameters": { "role": "METRICS_SERVER" }
     },
     "graph.example.com": {
       "ip": "192.168.36.21",
-      "classes": "profiles::influxdb"
+      "classes": "profiles::grafana",
+      "ports": [ {"host": 8080, "guest": 80, "id": "web-gui"} ],
+      "classes": "profiles::grafana",
+      "host_parameters": { "role": "GRAPHING_SERVER" }
+    },
+    "es-master.example.com": {
+      "ip": "192.168.35.20",
+      "hostgroup": "Elasticsearch_Vagrant",
+      "host_parameters": { "role": "ES_MASTER" },
+      "ports": [ {"host": 9200, "guest": 19200, "id": "es"} ]
+    },
+    "es-01.example.com": {
+      "ip": "192.168.35.21",
+      "hostgroup": "Elasticsearch_Vagrant"
+    },
+    "es-02.example.com": {
+      "ip": "192.168.35.22",
+      "hostgroup": "Elasticsearch_Vagrant"
+    },
+    "es-03.example.com": {
+      "ip": "192.168.35.23",
+      "hostgroup": "Elasticsearch_Vagrant"
+    },
+    "es-client.example.com": {
+      "ip": "192.168.35.25",
+      "role": "elasticsearch_client"
     },
     "datascience.example.com": {
       "ip": "192.168.35.10",
@@ -42,27 +118,27 @@
       "hostgroup": "dev_hadoop_nodes"
     },
     "cassandra01.example.com": {
-      "ip": "192.168.35.10",
+      "ip": "192.168.35.20",
       "hostgroup": "Cassandra_Vagrant"
     },
     "cassandra02.example.com": {
-      "ip": "192.168.35.11",
+      "ip": "192.168.35.21",
       "hostgroup": "Cassandra_Vagrant"
     },
     "cassandra03.example.com": {
-      "ip": "192.168.35.12",
+      "ip": "192.168.35.22",
       "hostgroup": "Cassandra_Vagrant"
     },
     "cassandra04.example.com": {
-      "ip": "192.168.35.13",
+      "ip": "192.168.35.23",
       "hostgroup": "Cassandra_Vagrant"
     },
     "cassandra05.example.com": {
-      "ip": "192.168.35.14",
+      "ip": "192.168.35.24",
       "hostgroup": "Cassandra_Vagrant"
     },
     "cassandra06.example.com": {
-      "ip": "192.168.35.15",
+      "ip": "192.168.35.25",
       "hostgroup": "Cassandra_Vagrant"
     }
   }

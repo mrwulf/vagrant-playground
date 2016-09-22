@@ -34,24 +34,34 @@ end
 base_config = deep_symbolize JSON.parse(File.read(CONFIG_FILE))
 workspace_config = deep_symbolize JSON.parse(File.read("#{WORKSPACE}/#{CONFIG_FILE}")) || {}
 
-nodes_config = multi_merge( base_config[:nodes], workspace_config[:nodes] )
-hostgroup_config = multi_merge( base_config[:hostgroups], workspace_config[:hostgroups] )
-globalparms_config = multi_merge( base_config[:global_parameters], workspace_config[:global_parameters] )
-defaultnode_config = multi_merge( base_config[:default_node], workspace_config[:default_node] )
+$nodes_config = multi_merge( base_config[:nodes], workspace_config[:nodes] )
+$hostgroup_config = multi_merge( base_config[:hostgroups], workspace_config[:hostgroups] )
+$globalparms_config = multi_merge( base_config[:global_parameters], workspace_config[:global_parameters] )
+$defaultnode_config = multi_merge( base_config[:default_node], workspace_config[:default_node] )
+
+def node_config(name)
+  node_defaultconfig   = $defaultnode_config
+  node_values          = $nodes_config[ name.to_sym ]
+  node_hostgroupconfig = {}
+  if node_values[ :hostgroup ] and $hostgroup_config[ node_values[ :hostgroup ].to_sym ] then
+    node_hostgroupconfig = $hostgroup_config[ node_values[:hostgroup].to_sym ][ :default_node ]
+  end
+
+  multi_merge( node_defaultconfig,
+               node_hostgroupconfig,
+               node_values )
+end
 
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  nodes_config.each do |node, values|
+  $nodes_config.each do |node, values|
     node_name   = node.to_s
-    node_values = multi_merge( defaultnode_config,
-                               values[:hostgroup] ? hostgroup_config[values[:hostgroup].to_sym][:default_node] : {},
-                               values )
+    node_values = node_config( node_name )
 
     node_values[:autostart] = true if node_values[:autostart].nil?
 
     config.vbguest.auto_update = true
-
     config.hostmanager.enabled = true
     config.hostmanager.manage_host = true
     config.hostmanager.ignore_private_ip = false
@@ -59,30 +69,42 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Manage foreman hostgroups
     if node_name == FOREMAN then
-      config.trigger.after :up, :vm => [node_name] do |trigger|
-        hostgroup_config.each do |hostgroup_name, hostgroup_values|
+      config.trigger.after [:up, :resume, :provision, :reload], :vm => [node_name] do |trigger|
+        $hostgroup_config.each do |hostgroup_name, hostgroup_values|
           hostgroup_command = "hammer -u admin -p admin hostgroup create --name \"#{hostgroup_name}\""
 
           hostgroup_values.each do |option, value|
+            next if option == :parameters
             next if option == :default_node
             hostgroup_command = "#{hostgroup_command} --#{option} \"#{value}\""
           end
           safe_run_remote hostgroup_command
+          if hostgroup_values[:parameters].respond_to?(:each) then
+            hostgroup_values[:parameters].each do |hostgroup_parameter, value|
+              safe_run_remote "hammer -u admin -p admin hostgroup set-parameter --hostgroup \"#{hostgroup_name}\" --name \"#{hostgroup_parameter}\" --value \"#{value}\""
+            end
+          end
         end
-        globalparms_config.each do |globalparm, globalvalue|
+        $globalparms_config.each do |globalparm, globalvalue|
           safe_run_remote "hammer -u admin -p admin global-parameter set --name \"#{globalparm}\" --value \"#{globalvalue}\""
         end
       end
     else
       # check that foreman is running... vagrant status | grep theforeman\W*\w+running &&
       # Add/Remove nodes from hostgroups
-      config.trigger.after :up, :vm => [node_name] do |trigger|
+      config.trigger.after [:up, :provision, :reload], :vm => [node_name] do |trigger|
         if !node_values[:hostgroup].nil? then
           safe_run "vagrant ssh #{FOREMAN} -- -t \"hammer -u admin -p admin host update --name #{node_name} --hostgroup #{node_values[:hostgroup]}\""
         end
         if node_values[:classes] then
           safe_run "vagrant ssh #{FOREMAN} -- -t \"hammer -u admin -p admin host update --name #{node_name} --puppet-classes #{node_values[:classes]}\""
         end
+        if node_values[:host_parameters] then
+          node_values[:host_parameters].each do |param_key, param_value|
+            safe_run "vagrant ssh #{FOREMAN} -- -t \"hammer -u admin -p admin host update --name #{node_name} --parameters '#{param_key}=#{param_value}'\""
+          end
+        end
+
         safe_run_remote "sudo puppet agent --test || true"
       end
 
@@ -96,6 +118,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       boxconfig.vm.box = node_values[:box]
       boxconfig.vm.hostname = node_name
       boxconfig.vm.network "private_network", ip: node_values[:ip]
+
+      short_name = node_name[/([^.]*)/,0]
+      boxconfig.hostmanager.aliases = [ short_name ]
 
       # configures all forwarding ports in JSON array
       node_values[:ports].each do |port|
