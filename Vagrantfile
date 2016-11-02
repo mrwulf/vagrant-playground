@@ -115,11 +115,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
 
     config.vm.define node_name, autostart: node_values[:autostart] do |boxconfig|
+      short_name = node_name[/([^.]*)/,0]
+
       boxconfig.vm.box = node_values[:box]
-      boxconfig.vm.hostname = node_name
+      boxconfig.vm.hostname = node_values[:box].include?('win') ? short_name : node_name
       boxconfig.vm.network "private_network", ip: node_values[:ip]
 
-      short_name = node_name[/([^.]*)/,0]
       boxconfig.hostmanager.aliases = [ short_name ]
 
       # configures all forwarding ports in JSON array

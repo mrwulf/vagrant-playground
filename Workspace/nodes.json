@@ -29,6 +29,14 @@
     "vagrant": true
   },
   "nodes": {
+    "iis-01.example.com": {
+      "ip": "192.168.36.50",
+      "ports": [ {"host": 33389, "guest": 3389, "id": "rpd"} ],
+      "box": "win2012r2",
+      "bootstrap": "bootstrap-node-win.bat",
+
+      "classes": "profiles::windows::core"
+    },
     "memcached-01.example.com": {
       "ip": "192.168.36.10",
       "ports": [ {"host": 11211, "guest": 11211, "id": "interface"} ],
