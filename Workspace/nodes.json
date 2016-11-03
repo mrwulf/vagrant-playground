@@ -96,25 +96,25 @@
       "host_parameters": { "role": "GRAPHING_SERVER" }
     },
     "es-master.example.com": {
-      "ip": "192.168.35.20",
+      "ip": "192.168.35.30",
       "hostgroup": "Elasticsearch_Vagrant",
       "host_parameters": { "role": "ES_MASTER" },
       "ports": [ {"host": 9200, "guest": 19200, "id": "es"} ]
     },
     "es-01.example.com": {
-      "ip": "192.168.35.21",
+      "ip": "192.168.35.31",
       "hostgroup": "Elasticsearch_Vagrant"
     },
     "es-02.example.com": {
-      "ip": "192.168.35.22",
+      "ip": "192.168.35.32",
       "hostgroup": "Elasticsearch_Vagrant"
     },
     "es-03.example.com": {
-      "ip": "192.168.35.23",
+      "ip": "192.168.35.33",
       "hostgroup": "Elasticsearch_Vagrant"
     },
     "es-client.example.com": {
-      "ip": "192.168.35.25",
+      "ip": "192.168.35.35",
       "role": "elasticsearch_client"
     },
     "datascience.example.com": {
