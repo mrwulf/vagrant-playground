@@ -67,6 +67,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.hostmanager.ignore_private_ip = false
     config.hostmanager.include_offline = true
 
+    config.windows.set_work_network = true
+    config.winrm.usuername = "vagrant"
+    config.winrm.password = "vagrant"
+
   # Manage foreman hostgroups
     if node_name == FOREMAN then
       config.trigger.after [:up, :resume, :provision, :reload], :vm => [node_name] do |trigger|
@@ -120,8 +124,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       boxconfig.vm.box = node_values[:box]
       boxconfig.vm.hostname = node_values[:box].include?('win') ? short_name : node_name
       boxconfig.vm.network "private_network", ip: node_values[:ip]
-
       boxconfig.hostmanager.aliases = [ short_name ]
+
+      if node_values[:box].include?('win') then
+        boxconfig.hostmanager.manage_host = false
+        boxconfig.vm.communicator = "winrm"
+        boxconfig.vm.network :forwarded_port, guest: 5985, host: 5985, id: "winrm", auto_correct: true
+      end
 
       # configures all forwarding ports in JSON array
       node_values[:ports].each do |port|
