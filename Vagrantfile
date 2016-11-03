@@ -127,7 +127,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       boxconfig.hostmanager.aliases = [ short_name ]
 
       if node_values[:box].include?('win') then
-        boxconfig.hostmanager.manage_host = false
         boxconfig.vm.communicator = "winrm"
         boxconfig.vm.network :forwarded_port, guest: 5985, host: 5985, id: "winrm", auto_correct: true
       end
