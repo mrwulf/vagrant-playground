@@ -10,7 +10,7 @@
 DESIRED_FOREMAN_VERSION=latest
 
 # Update system first
-sudo yum update -y
+sudo yum makecache && sudo yum update -y
 
 if puppet agent --version | grep "^3." 2> /dev/null
 then
@@ -30,10 +30,7 @@ then
 else
     sudo yum -y install epel-release http://yum.theforeman.org/releases/${DESIRED_FOREMAN_VERSION}/el7/x86_64/foreman-release.rpm && \
     sudo yum -y install foreman-installer nano nmap-ncat && \
-    sudo foreman-installer \
-	  --foreman-admin-password=admin \
-	  --puppet-listen=true \
-	  --puppet-hiera-config=/etc/puppet/hieradata/hiera.yaml
+    sudo foreman-installer --foreman-admin-password=admin --puppet-listen=true --puppet-hiera-config=/etc/puppet/hieradata/hiera.yaml
 
     # Set-up firewall
     # https://www.digitalocean.com/community/tutorials/additional-recommended-steps-for-new-centos-7-servers

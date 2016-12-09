@@ -65,9 +65,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.hostmanager.enabled = true
     config.hostmanager.manage_host = true
     config.hostmanager.ignore_private_ip = false
-    config.hostmanager.include_offline = true
+    config.hostmanager.include_offline = false
 
-    config.windows.set_work_network = true
+    #config.windows.set_work_network = true
     config.winrm.usuername = "vagrant"
     config.winrm.password = "vagrant"
 
@@ -123,12 +123,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       boxconfig.vm.box = node_values[:box]
       boxconfig.vm.hostname = node_values[:box].include?('win') ? short_name : node_name
-      boxconfig.vm.network "private_network", ip: node_values[:ip]
+      boxconfig.vm.network "private_network", ip: node_values[:ip], netmask: "255.255.0.0"
       boxconfig.hostmanager.aliases = [ short_name ]
 
       if node_values[:box].include?('win') then
+        #boxconfig.hostmanager.manage_guest = false
         boxconfig.vm.communicator = "winrm"
-        boxconfig.vm.network :forwarded_port, guest: 5985, host: 5985, id: "winrm", auto_correct: true
+        boxconfig.vm.network "forwarded_port", guest: 5985, host: 5985, id: "winrm", auto_correct: true
       end
 
       # configures all forwarding ports in JSON array

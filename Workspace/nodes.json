@@ -28,13 +28,14 @@
     "security_users": "UNSET",
     "vagrant": true
   },
+  "ignored_nodes": {
+  },
   "nodes": {
     "iis-01.example.com": {
       "ip": "192.168.36.50",
       "ports": [ {"host": 33389, "guest": 3389, "id": "rpd"} ],
       "box": "win2012r2",
       "bootstrap": "bootstrap-node-win.bat",
-
       "classes": "profiles::windows::core"
     },
     "memcached-01.example.com": {
@@ -69,17 +70,17 @@
                  {"host": 8580, "guest": 80, "id": "web-gui-80"},
                  {"host": 8601, "guest": 8600, "id": "web-gui-8600"},
                  {"host": 5300, "guest": 53, "id": "dns-53"} ],
-      "hostgroup": "Consul/Vagrant"
+      "hostgroup": "Consul/Vagrant_DC1"
     },
     "consul-02.example.com": {
       "ip": "192.168.36.11",
       "ports": [ {"host": 8502, "guest": 8500, "id": "web-gui"} ],
-      "hostgroup": "Consul/Vagrant"
+      "hostgroup": "Consul/Vagrant_DC1"
     },
     "consul-03.example.com": {
       "ip": "192.168.36.12",
       "ports": [ {"host": 8503, "guest": 8500, "id": "web-gui"} ],
-      "hostgroup": "Consul/Vagrant"
+      "hostgroup": "Consul/Vagrant_DC2"
     },
     "metrics.example.com": {
       "ip": "192.168.36.20",
@@ -99,7 +100,7 @@
       "ip": "192.168.35.30",
       "hostgroup": "Elasticsearch_Vagrant",
       "host_parameters": { "role": "ES_MASTER" },
-      "ports": [ {"host": 9200, "guest": 19200, "id": "es"} ]
+      "ports": [ {"host": 9200, "guest": 9200, "id": "es"} ]
     },
     "es-01.example.com": {
       "ip": "192.168.35.31",

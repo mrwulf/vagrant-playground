@@ -7,7 +7,7 @@
                   {"host":  "Workspace/hiera/", "guest": "/etc/puppet/hieradata"}
         ],
       "memory": 1024,
-      "box": "puppetlabs/centos-7.0-64-puppet",
+      "box": "puppetlabs/centos-7.2-64-nocm",
       "bootstrap": "bootstrap-foreman.sh"
     }
   },
