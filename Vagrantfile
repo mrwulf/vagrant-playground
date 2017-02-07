@@ -109,7 +109,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           end
         end
 
-        safe_run_remote "sudo puppet agent --test || true"
+        #safe_run_remote "sudo puppet agent --test || true"
       end
 
       config.trigger.after :destroy, :vm => [node_name] do |trigger|
@@ -123,7 +123,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       boxconfig.vm.box = node_values[:box]
       boxconfig.vm.hostname = node_values[:box].include?('win') ? short_name : node_name
-      boxconfig.vm.network "private_network", ip: node_values[:ip], netmask: "255.255.0.0"
+      boxconfig.vm.network "private_network", ip: node_values[:ip], netmask: "255.255.192.0", name: 'eth1'
       boxconfig.hostmanager.aliases = [ short_name ]
 
       if node_values[:box].include?('win') then

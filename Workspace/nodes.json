@@ -1,10 +1,22 @@
 {
   "hostgroups": {
-    "Cassandra_Vagrant": {
+    "Aerospike/Vagrant": {
+      "puppet-classes": "roles,repos",
       "environment": "production",
       "puppet-proxy": "theforeman.example.com",
-      "puppet-classes": "roles",
+      "parameters": { "role": "AEROSPIKE" }
+    },
+    "Cassandra/Vagrant": {
+      "environment": "production",
+      "puppet-proxy": "theforeman.example.com",
+      "puppet-classes": "roles,repos",
       "parameters": { "role": "CASSANDRA" }
+    },
+    "Consul/Vagrant": {
+      "puppet-classes": "roles,repos",
+      "environment": "production",
+      "puppet-proxy": "theforeman.example.com",
+      "parameters": { "role": "CONSUL" }
     },
     "dev_hadoop_nodes": {
       "environment": "production",
@@ -15,10 +27,11 @@
       "environment": "production",
       "puppet-proxy": "theforeman.example.com"
     },
-    "Elasticsearch_Vagrant": {
-      "puppet-classes": "roles",
+    "Elasticsearch/Vagrant": {
+      "puppet-classes": "roles,repos",
       "environment": "production",
-      "puppet-proxy": "theforeman.example.com"
+      "puppet-proxy": "theforeman.example.com",
+      "parameters": { "role": "ELASTICSEARCH_DATA" }
     }
   },
   "global_parameters": {
@@ -37,6 +50,22 @@
       "box": "win2012r2",
       "bootstrap": "bootstrap-node-win.bat",
       "classes": "profiles::windows::core"
+    },
+    "aero-01.example.com": {
+      "ip": "192.168.35.10",
+      "ports": [ {"host": 8081, "guest": 8081, "id": "amc"} ],
+      "hostgroup": "Consul/Vagrant_DC1"
+    },
+    "aero-02.example.com": {
+      "ip": "192.168.35.11",
+      "ports": [ {"host": 8082, "guest": 8081, "id": "amc"} ],
+      "hostgroup": "Consul/Vagrant_DC1"
+    },
+    "elk-01.example.com": {
+      "ip": "192.168.35.21",
+      "ports": [ {"host": 5601, "guest": 5601, "id": "kibana"},
+                 {"host": 9200, "guest": 9200, "id": "es"} ],
+      "classes": "profiles::logstash"
     },
     "memcached-01.example.com": {
       "ip": "192.168.36.10",
@@ -98,21 +127,21 @@
     },
     "es-master.example.com": {
       "ip": "192.168.35.30",
-      "hostgroup": "Elasticsearch_Vagrant",
-      "host_parameters": { "role": "ES_MASTER" },
+      "hostgroup": "Elasticsearch/Vagrant",
+      "host_parameters": { "role": "ELASTICSEARCH_MASTER" },
       "ports": [ {"host": 9200, "guest": 9200, "id": "es"} ]
     },
     "es-01.example.com": {
       "ip": "192.168.35.31",
-      "hostgroup": "Elasticsearch_Vagrant"
+      "hostgroup": "Elasticsearch/Vagrant"
     },
     "es-02.example.com": {
       "ip": "192.168.35.32",
-      "hostgroup": "Elasticsearch_Vagrant"
+      "hostgroup": "Elasticsearch/Vagrant"
     },
     "es-03.example.com": {
       "ip": "192.168.35.33",
-      "hostgroup": "Elasticsearch_Vagrant"
+      "hostgroup": "Elasticsearch/Vagrant"
     },
     "es-client.example.com": {
       "ip": "192.168.35.35",
@@ -128,27 +157,27 @@
     },
     "cassandra01.example.com": {
       "ip": "192.168.35.20",
-      "hostgroup": "Cassandra_Vagrant"
+      "hostgroup": "Cassandra/Vagrant"
     },
     "cassandra02.example.com": {
       "ip": "192.168.35.21",
-      "hostgroup": "Cassandra_Vagrant"
+      "hostgroup": "Cassandra/Vagrant"
     },
     "cassandra03.example.com": {
       "ip": "192.168.35.22",
-      "hostgroup": "Cassandra_Vagrant"
+      "hostgroup": "Cassandra/Vagrant"
     },
     "cassandra04.example.com": {
       "ip": "192.168.35.23",
-      "hostgroup": "Cassandra_Vagrant"
+      "hostgroup": "Cassandra/Vagrant"
     },
     "cassandra05.example.com": {
       "ip": "192.168.35.24",
-      "hostgroup": "Cassandra_Vagrant"
+      "hostgroup": "Cassandra/Vagrant"
     },
     "cassandra06.example.com": {
       "ip": "192.168.35.25",
-      "hostgroup": "Cassandra_Vagrant"
+      "hostgroup": "Cassandra/Vagrant"
     }
   }
 }

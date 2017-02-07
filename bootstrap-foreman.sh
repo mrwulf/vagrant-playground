@@ -24,13 +24,20 @@ else
     sudo yum clean all
 fi
 
-if ps aux | grep "/usr/share/foreman" | grep -v grep 2> /dev/null
+if ps aux | grep "/usr/share/foremanx" | grep -v grep 2> /dev/null
 then
     echo "Foreman appears to all already be installed. Exiting..."
 else
+    sudo yum -y remove puppet-server puppet
+    sudo rpm -Uvh https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
     sudo yum -y install epel-release http://yum.theforeman.org/releases/${DESIRED_FOREMAN_VERSION}/el7/x86_64/foreman-release.rpm && \
-    sudo yum -y install foreman-installer nano nmap-ncat && \
-    sudo foreman-installer --foreman-admin-password=admin --puppet-listen=true --puppet-hiera-config=/etc/puppet/hieradata/hiera.yaml
+    sudo yum -y install puppetserver puppet-agent puppet-agent-oauth foreman-installer nano nmap-ncat htop && \
+    sudo foreman-installer --foreman-admin-password=admin \
+                           --puppet-server-max-active-instances=3 \
+                           --puppet-server-jvm-min-heap-size=256M \
+                           --puppet-server-jvm-max-heap-size=256M \
+                           --puppet-server-implementation=puppetserver \
+                           --puppet-hiera-config=/etc/puppetlabs/code/hieradata/hiera.yaml
 
     # Set-up firewall
     # https://www.digitalocean.com/community/tutorials/additional-recommended-steps-for-new-centos-7-servers
@@ -47,7 +54,7 @@ else
     sudo systemctl enable firewalld
 
 	# Enable auto-signing
-	sudo echo "*.example.com" > /etc/puppet/autosign.conf
+	sudo echo "\"*.example.com\"" > /etc/puppetlabs/puppetserver/conf.d/autosign.conf
 
     # Run the Puppet agent on the Foreman host which will send the first Puppet report to Foreman,
     # automatically creating the host in Foreman's database
@@ -58,5 +65,6 @@ else
     # sudo puppet module install -i /etc/puppet/environments/production/modules locp-cassandra
 
 	# Refresh foreman's class list
-	sudo hammer --username admin --password admin proxy import-classes --id 1
+  sudo service foreman-proxy restart
+	sudo hammer --username admin --password admin proxy import-classes --id 1 || true
 fi
