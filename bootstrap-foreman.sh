@@ -1,10 +1,6 @@
 #!/bin/sh
 
 # Run on VM to bootstrap the Foreman server
-# Gary A. Stafford - 01/15/2015
-# Modified - 08/19/2015
-# Downgrade Puppet on box from 4.x to 3.x for Foreman 1.9
-# http://theforeman.org/manuals/1.9/index.html#3.1.2PuppetCompatibility
 
 # Choose from 1.9, 1.10, latest, nightly, etc
 DESIRED_FOREMAN_VERSION=latest
@@ -12,22 +8,11 @@ DESIRED_FOREMAN_VERSION=latest
 # Update system first
 sudo yum makecache && sudo yum update -y
 
-if puppet agent --version | grep "^3." 2> /dev/null
-then
-    echo "Puppet Agent $(puppet agent --version) is already installed. Moving on..."
-else
-    echo "Puppet Agent $(puppet agent --version) installed. Replacing..."
-
-    sudo rpm -ivh http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm && \
-    sudo yum -y erase puppet-agent && \
-    sudo rm -f /etc/yum.repos.d/puppetlabs-pc1.repo && \
-    sudo yum clean all
-fi
-
-if ps aux | grep "/usr/share/foremanx" | grep -v grep 2> /dev/null
+if ps aux | grep "/usr/share/foreman" | grep -v grep 2> /dev/null
 then
     echo "Foreman appears to all already be installed. Exiting..."
 else
+    sudo yum -y install deltarpm
     sudo yum -y remove puppet-server puppet
     sudo rpm -Uvh https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
     sudo yum -y install epel-release http://yum.theforeman.org/releases/${DESIRED_FOREMAN_VERSION}/el7/x86_64/foreman-release.rpm && \
@@ -37,6 +22,8 @@ else
                            --puppet-server-jvm-min-heap-size=256M \
                            --puppet-server-jvm-max-heap-size=256M \
                            --puppet-server-implementation=puppetserver \
+                           --puppet-autosign=true \
+                           --puppet-autosign-entries="*.example.com" \
                            --puppet-hiera-config=/etc/puppetlabs/code/hieradata/hiera.yaml
 
     # Set-up firewall
@@ -52,9 +39,6 @@ else
 
     sudo firewall-cmd --reload
     sudo systemctl enable firewalld
-
-	# Enable auto-signing
-	sudo echo "\"*.example.com\"" > /etc/puppetlabs/puppetserver/conf.d/autosign.conf
 
     # Run the Puppet agent on the Foreman host which will send the first Puppet report to Foreman,
     # automatically creating the host in Foreman's database

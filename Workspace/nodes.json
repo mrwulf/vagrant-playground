@@ -32,6 +32,18 @@
       "environment": "production",
       "puppet-proxy": "theforeman.example.com",
       "parameters": { "role": "ELASTICSEARCH_DATA" }
+    },
+    "Kafka/Vagrant": {
+      "puppet-classes": "roles,repos",
+      "environment": "production",
+      "puppet-proxy": "theforeman.example.com",
+      "parameters": { "role": "KAFKA" }
+    },
+    "RabbitMQ/Vagrant": {
+      "puppet-classes": "roles,repos",
+      "environment": "production",
+      "puppet-proxy": "theforeman.example.com",
+      "parameters": { "role": "RABBITMQ" }
     }
   },
   "global_parameters": {
@@ -61,11 +73,21 @@
       "ports": [ {"host": 8082, "guest": 8081, "id": "amc"} ],
       "hostgroup": "Consul/Vagrant_DC1"
     },
+    "kafka-01.example.com": {
+      "ip": "192.168.35.18",
+      "ports": [ {"host": 8081, "guest": 8081, "id": "amc"} ],
+      "hostgroup": "Kafka/Vagrant"
+    },
+    "kafka-02.example.com": {
+      "ip": "192.168.35.19",
+      "ports": [ {"host": 8082, "guest": 8081, "id": "amc"} ],
+      "hostgroup": "Kafka/Vagrant"
+    },
     "elk-01.example.com": {
       "ip": "192.168.35.21",
       "ports": [ {"host": 5601, "guest": 5601, "id": "kibana"},
                  {"host": 9200, "guest": 9200, "id": "es"} ],
-      "classes": "profiles::logstash"
+      "classes": "repos,profiles::elk"
     },
     "memcached-01.example.com": {
       "ip": "192.168.36.10",
@@ -81,17 +103,17 @@
       "ip": "192.168.36.15",
       "ports": [ {"host": 55672, "guest": 55672, "id": "web-gui"},
                  {"host": 8081, "guest": 80, "id": "web-gui-2"}],
-      "classes": "profiles::rabbitmq"
+      "hostgroup": "RabbitMQ/Vagrant"
     },
     "rabbitmq-02.example.com": {
       "ip": "192.168.36.16",
       "ports": [ {"host": 45672, "guest": 55672, "id": "web-gui"} ],
-      "classes": "profiles::rabbitmq"
+      "hostgroup": "RabbitMQ/Vagrant"
     },
     "rabbitmq-03.example.com": {
       "ip": "192.168.36.12",
       "ports": [ {"host": 35672, "guest": 55672, "id": "web-gui"} ],
-      "classes": "profiles::rabbitmq"
+      "hostgroup": "RabbitMQ/Vagrant"
     },
     "consul-01.example.com": {
       "ip": "192.168.36.10",
