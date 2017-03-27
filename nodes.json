@@ -16,7 +16,7 @@
     "mounts": [],
     "memory": 1024,
     "autostart": false,
-    "box": "centos/6",
+    "box": "puppetlabs/centos-6.6-64-puppet",
     "bootstrap": "bootstrap-node-rhel.sh"
   }
 }
