@@ -12,11 +12,17 @@
       "puppet-classes": "roles,repos",
       "parameters": { "role": "CASSANDRA" }
     },
-    "Consul/Vagrant": {
+    "Consul/Vagrant_DC1": {
       "puppet-classes": "roles,repos",
       "environment": "production",
       "puppet-proxy": "theforeman.example.com",
-      "parameters": { "role": "CONSUL" }
+      "parameters": { "role": "CONSUL_REPLICA" }
+    },
+    "Consul/Vagrant_DC2": {
+      "puppet-classes": "roles,repos",
+      "environment": "production",
+      "puppet-proxy": "theforeman.example.com",
+      "parameters": { "role": "CONSUL_SERVER" }
     },
     "dev_hadoop_nodes": {
       "environment": "production",
