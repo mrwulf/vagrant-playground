@@ -94,6 +94,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         end
       end
     else
+      config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+
       # check that foreman is running... vagrant status | grep theforeman\W*\w+running &&
       # Add/Remove nodes from hostgroups
       config.trigger.after [:up, :provision, :reload], :vm => [node_name] do |trigger|

@@ -143,7 +143,7 @@
       "ip": "192.168.36.20",
       "ports": [ {"host": 8083, "guest": 8083, "id": "web-gui"},
                  {"host": 8086, "guest": 8086, "id": "rest"}     ],
-      "classes": "profiles::influxdb",
+      "classes": "repos,profiles::influxdb",
       "host_parameters": { "role": "METRICS_SERVER" }
     },
     "graph.example.com": {

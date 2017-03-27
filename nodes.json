@@ -16,7 +16,7 @@
     "mounts": [],
     "memory": 1024,
     "autostart": false,
-    "box": "local/centos66",
+    "box": "centos/6",
     "bootstrap": "bootstrap-node-rhel.sh"
   }
 }
