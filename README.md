@@ -1,5 +1,7 @@
 ### Installing Foreman and Puppet Agent on Multiple VMs Using Vagrant and VirtualBox
 Set up your environment:
+1. Install Virtualbox ("tested" with v5.1.18)
+1. Install Vagrant ("tested" with v1.9.1)
 1.	`vagrant plugin install vagrant-hostmanger`
 1.	`vagrant plugin install vagrant-vbguest`
 1.	`vagrant plugin install vagrant-triggers`
@@ -29,6 +31,7 @@ Set up your environment:
 
 ### Useful Multi-VM Commands
 The use of the specific <machine> name is optional in most cases.
+* `vagrant halt`
 * `vagrant up <machine>`
 * `vagrant reload <machine>`
 * `vagrant destroy -f <machine> && vagrant up <machine>`
