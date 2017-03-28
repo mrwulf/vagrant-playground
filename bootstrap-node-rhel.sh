@@ -18,7 +18,6 @@ else
     echo "Puppet Agent $(puppet agent --version) is already installed. Moving on..."
   else
     sudo yum -y install puppet-agent --nogpgcheck
-    sudo ln -s /opt/puppetlabs/bin/puppet /usr/bin/puppet
     PUPPET=`which puppet`
   fi
 
@@ -43,4 +42,9 @@ else
 
 	# Enable puppet and make sure the agent is running
 	sudo $PUPPET resource service puppet ensure=running enable=true
+fi
+
+if [ ! -f /usr/bin/puppet ]
+then
+  sudo ln -s /opt/puppetlabs/bin/puppet /usr/bin/puppet
 fi
