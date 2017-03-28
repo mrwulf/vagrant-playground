@@ -49,6 +49,7 @@ else
     # sudo puppet module install -i /etc/puppet/environments/production/modules locp-cassandra
 
 	# Refresh foreman's class list
+  sudo hammer settings set --name proxy_request_timeout --value 300
   sudo service foreman-proxy restart
-	sudo hammer --username admin --password admin proxy import-classes --id 1 || true
+  sudo hammer --username admin --password admin proxy import-classes --id 1 || true
 fi

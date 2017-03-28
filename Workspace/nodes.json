@@ -45,6 +45,12 @@
       "puppet-proxy": "theforeman.example.com",
       "parameters": { "role": "KAFKA" }
     },
+    "Metrics": {
+      "puppet-classes": "repos,profiles::influxdb",
+      "environment": "production",
+      "puppet-proxy": "theforeman.example.com",
+      "parameters": { "role": "METRICS_SERVER" }
+    },
     "RabbitMQ/Vagrant": {
       "puppet-classes": "roles,repos",
       "environment": "production",
@@ -143,7 +149,7 @@
       "ip": "192.168.36.20",
       "ports": [ {"host": 8083, "guest": 8083, "id": "web-gui"},
                  {"host": 8086, "guest": 8086, "id": "rest"}     ],
-      "classes": "repos,profiles::influxdb",
+      "hostgroup": "Metrics",
       "host_parameters": { "role": "METRICS_SERVER" }
     },
     "graph.example.com": {

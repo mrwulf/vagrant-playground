@@ -3,7 +3,7 @@
 # Run on VM to bootstrap the Puppet Agent RHEL-based Linux nodes
 
 # Update system first
-sudo yum update -y
+sudo yum update -y --nogpgcheck
 PUPPET_CONF=/etc/puppetlabs/puppet/puppet.conf
 
 if grep "#provisioned" $PUPPET_CONF > /dev/null 2>&1
