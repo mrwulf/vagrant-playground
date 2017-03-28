@@ -6,6 +6,7 @@
 DESIRED_FOREMAN_VERSION=latest
 
 # Update system first
+sudo yum -y install deltarpm
 sudo yum makecache && sudo yum update -y
 
 if ps aux | grep "/usr/share/foreman" | grep -v grep 2> /dev/null
@@ -18,9 +19,9 @@ else
     sudo yum -y install epel-release http://yum.theforeman.org/releases/${DESIRED_FOREMAN_VERSION}/el7/x86_64/foreman-release.rpm && \
     sudo yum -y install puppetserver puppet-agent puppet-agent-oauth foreman-installer nano nmap-ncat htop && \
     sudo foreman-installer --foreman-admin-password=admin \
-                           --puppet-server-max-active-instances=3 \
-                           --puppet-server-jvm-min-heap-size=256M \
-                           --puppet-server-jvm-max-heap-size=256M \
+                           --puppet-server-max-active-instances=1 \
+                           --puppet-server-jvm-min-heap-size=512M \
+                           --puppet-server-jvm-max-heap-size=512M \
                            --puppet-server-implementation=puppetserver \
                            --puppet-autosign=true \
                            --puppet-autosign-entries="*.example.com" \
@@ -48,8 +49,11 @@ else
     # Optional, install some optional puppet modules on Foreman server to get started...
     # sudo puppet module install -i /etc/puppet/environments/production/modules locp-cassandra
 
-	# Refresh foreman's class list
+  # Make it more likely that the class import will succeed
+  sudo service puppetserver restart
   sudo hammer settings set --name proxy_request_timeout --value 300
   sudo service foreman-proxy restart
-  sudo hammer --username admin --password admin proxy import-classes --id 1 || true
+  sudo hammer environment create --name production
 fi
+# Refresh foreman's class list everytime we start
+sudo hammer proxy import-classes --id 1 --environment production || true

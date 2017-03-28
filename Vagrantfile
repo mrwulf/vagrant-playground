@@ -75,7 +75,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     if node_name == FOREMAN then
       config.trigger.after [:up, :resume, :provision, :reload], :vm => [node_name] do |trigger|
         $hostgroup_config.each do |hostgroup_name, hostgroup_values|
-          hostgroup_command = "hammer -u admin -p admin hostgroup create --name \"#{hostgroup_name}\""
+          hostgroup_command = "sudo hammer hostgroup create --name \"#{hostgroup_name}\""
 
           hostgroup_values.each do |option, value|
             next if option == :parameters
@@ -85,12 +85,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           safe_run_remote hostgroup_command
           if hostgroup_values[:parameters].respond_to?(:each) then
             hostgroup_values[:parameters].each do |hostgroup_parameter, value|
-              safe_run_remote "hammer -u admin -p admin hostgroup set-parameter --hostgroup \"#{hostgroup_name}\" --name \"#{hostgroup_parameter}\" --value \"#{value}\""
+              safe_run_remote "sudo hammer hostgroup set-parameter --hostgroup \"#{hostgroup_name}\" --name \"#{hostgroup_parameter}\" --value \"#{value}\""
             end
           end
         end
         $globalparms_config.each do |globalparm, globalvalue|
-          safe_run_remote "hammer -u admin -p admin global-parameter set --name \"#{globalparm}\" --value \"#{globalvalue}\""
+          safe_run_remote "sudo hammer global-parameter set --name \"#{globalparm}\" --value \"#{globalvalue}\""
         end
       end
     else
@@ -100,14 +100,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Add/Remove nodes from hostgroups
       config.trigger.after [:up, :provision, :reload], :vm => [node_name] do |trigger|
         if !node_values[:hostgroup].nil? then
-          safe_run "vagrant ssh #{FOREMAN} -- -t \"hammer -u admin -p admin host update --name #{node_name} --hostgroup #{node_values[:hostgroup]}\""
+          safe_run "vagrant ssh #{FOREMAN} -- -t \"sudo hammer host update --name #{node_name} --hostgroup #{node_values[:hostgroup]}\""
         end
         if node_values[:classes] then
-          safe_run "vagrant ssh #{FOREMAN} -- -t \"hammer -u admin -p admin host update --name #{node_name} --puppet-classes #{node_values[:classes]}\""
+          safe_run "vagrant ssh #{FOREMAN} -- -t \"sudo hammer host update --name #{node_name} --puppet-classes #{node_values[:classes]}\""
         end
         if node_values[:host_parameters] then
           node_values[:host_parameters].each do |param_key, param_value|
-            safe_run "vagrant ssh #{FOREMAN} -- -t \"hammer -u admin -p admin host update --name #{node_name} --parameters '#{param_key}=#{param_value}'\""
+            safe_run "vagrant ssh #{FOREMAN} -- -t \"sudo hammer host update --name #{node_name} --parameters '#{param_key}=#{param_value}'\""
           end
         end
 
@@ -115,7 +115,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end
 
       config.trigger.after :destroy, :vm => [node_name] do |trigger|
-        safe_run "vagrant ssh #{FOREMAN} -- -t \"hammer -u admin -p admin host delete --name #{node_name}\" || true"
+        safe_run "vagrant ssh #{FOREMAN} -- -t \"sudo hammer host delete --name #{node_name}\" || true"
         safe_run "vagrant ssh #{FOREMAN} -- -t \"sudo puppet cert clean #{node_name}\" || true"
       end
     end
