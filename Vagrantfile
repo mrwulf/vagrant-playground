@@ -131,12 +131,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       if node_values[:box].include?('win') then
         #boxconfig.hostmanager.manage_guest = false
         boxconfig.vm.communicator = "winrm"
-        boxconfig.vm.network "forwarded_port", guest: 5985, host: 5985, id: "winrm", auto_correct: true
+        boxconfig.vm.network "forwarded_port", guest: 5985, host: 5985, id: "winrm", auto_correct: true, host_ip: "172.0.0.1"
       end
 
       # configures all forwarding ports in JSON array
       node_values[:ports].each do |port|
         boxconfig.vm.network "forwarded_port",
+          host_ip: "172.0.0.1",
           host:  port[:host],
           guest: port[:guest],
           id:    port[:id]
@@ -150,6 +151,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       boxconfig.vm.provider :virtualbox do |vb|
         vb.customize ["modifyvm", :id, "--memory", node_values[:memory]]
         vb.customize ["modifyvm", :id, "--name", node_name]
+        vb.gui = false
       end
 
       boxconfig.vm.provision :shell, :path => node_values[:bootstrap]
