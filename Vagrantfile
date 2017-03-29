@@ -131,7 +131,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       if node_values[:box].include?('win') then
         #boxconfig.hostmanager.manage_guest = false
         boxconfig.vm.communicator = "winrm"
-        boxconfig.vm.network "forwarded_port", guest: 5985, host: 5985, id: "winrm", auto_correct: true, host_ip: "172.0.0.1"
+        boxconfig.vm.network "forwarded_port", guest: 5985, host: 5985, id: "winrm", auto_correct: true, host_ip: "127.0.0.1"
       end
 
       # configures all forwarding ports in JSON array
