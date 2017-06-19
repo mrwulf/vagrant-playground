@@ -37,7 +37,7 @@
       "puppet-classes": "roles,repos",
       "environment": "production",
       "puppet-proxy": "theforeman.example.com",
-      "parameters": { "role": "ELASTICSEARCH_DATA" }
+      "parameters": { "role": "ELASTICSEARCH_UNIVERSAL" }
     },
     "Kafka/Vagrant": {
       "puppet-classes": "roles,repos",
@@ -59,7 +59,7 @@
     }
   },
   "global_parameters": {
-    "location": "Carlsbad",
+    "location": "Vagrant",
     "role": "UNSET",
     "security_groups": "UNSET",
     "security_users": "UNSET",
@@ -78,12 +78,12 @@
     "aero-01.example.com": {
       "ip": "192.168.35.10",
       "ports": [ {"host": 8081, "guest": 8081, "id": "amc"} ],
-      "hostgroup": "Consul/Vagrant_DC1"
+      "hostgroup": "Aerospike/Vagrant"
     },
     "aero-02.example.com": {
       "ip": "192.168.35.11",
       "ports": [ {"host": 8082, "guest": 8081, "id": "amc"} ],
-      "hostgroup": "Consul/Vagrant_DC1"
+      "hostgroup": "Aerospike/Vagrant"
     },
     "kafka-01.example.com": {
       "ip": "192.168.35.18",
@@ -99,7 +99,8 @@
       "ip": "192.168.35.21",
       "ports": [ {"host": 5601, "guest": 5601, "id": "kibana"},
                  {"host": 9200, "guest": 9200, "id": "es"} ],
-      "classes": "repos,profiles::elk"
+      "classes": "repos,profiles::elk",
+      "host_parameters": { "role": "ELK_SERVER" }
     },
     "memcached-01.example.com": {
       "ip": "192.168.36.10",
@@ -163,22 +164,27 @@
       "ip": "192.168.35.30",
       "hostgroup": "Elasticsearch/Vagrant",
       "host_parameters": { "role": "ELASTICSEARCH_MASTER" },
+      "box": "puppetlabs/centos-7.2-64-puppet",
       "ports": [ {"host": 9200, "guest": 9200, "id": "es"} ]
     },
     "es-01.example.com": {
       "ip": "192.168.35.31",
+      "box": "puppetlabs/centos-7.2-64-puppet",
       "hostgroup": "Elasticsearch/Vagrant"
     },
     "es-02.example.com": {
       "ip": "192.168.35.32",
+      "box": "puppetlabs/centos-7.2-64-puppet",
       "hostgroup": "Elasticsearch/Vagrant"
     },
     "es-03.example.com": {
       "ip": "192.168.35.33",
-      "hostgroup": "Elasticsearch/Vagrant"
+      "box": "puppetlabs/centos-7.2-64-puppet",
+      "ignore-hostgroup": "Elasticsearch/Vagrant"
     },
     "es-client.example.com": {
       "ip": "192.168.35.35",
+      "box": "puppetlabs/centos-7.2-64-puppet",
       "role": "elasticsearch_client"
     },
     "datascience.example.com": {
@@ -189,27 +195,30 @@
       "ip": "192.168.36.10",
       "hostgroup": "dev_hadoop_nodes"
     },
-    "cassandra01.example.com": {
+    "cassandra-01.example.com": {
       "ip": "192.168.35.20",
+      "box": "puppetlabs/centos-7.2-64-puppet",
       "hostgroup": "Cassandra/Vagrant"
     },
-    "cassandra02.example.com": {
+    "cassandra-02.example.com": {
       "ip": "192.168.35.21",
+      "box": "puppetlabs/centos-7.2-64-puppet",
       "hostgroup": "Cassandra/Vagrant"
     },
-    "cassandra03.example.com": {
+    "cassandra-03.example.com": {
       "ip": "192.168.35.22",
+      "box": "puppetlabs/centos-7.2-64-puppet",
       "hostgroup": "Cassandra/Vagrant"
     },
-    "cassandra04.example.com": {
+    "cassandra-04.example.com": {
       "ip": "192.168.35.23",
       "hostgroup": "Cassandra/Vagrant"
     },
-    "cassandra05.example.com": {
+    "cassandra-05.example.com": {
       "ip": "192.168.35.24",
       "hostgroup": "Cassandra/Vagrant"
     },
-    "cassandra06.example.com": {
+    "cassandra-06.example.com": {
       "ip": "192.168.35.25",
       "hostgroup": "Cassandra/Vagrant"
     }

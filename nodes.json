@@ -4,7 +4,7 @@
       "ip": "192.168.35.5",
       "ports": [ {"host": 8443, "guest": 443, "id": "foreman-dashboard"} ],
       "mounts": [ {"host":  "Workspace/puppet/", "guest": "/etc/puppetlabs/code/environments/production"},
-                  {"host":  "Workspace/hiera/", "guest": "/etc/puppetlabs/code/hieradata"}
+                  {"host":  "Workspace/hiera/", "guest": "/etc/puppetlabs/code/environments/hieradata"}
         ],
       "memory": 1536,
       "box": "puppetlabs/centos-7.2-64-nocm",

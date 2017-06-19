@@ -25,7 +25,7 @@ else
                            --puppet-server-implementation=puppetserver \
                            --puppet-autosign=true \
                            --puppet-autosign-entries="*.example.com" \
-                           --puppet-hiera-config=/etc/puppetlabs/code/hieradata/hiera.yaml
+                           --puppet-hiera-config=/etc/puppetlabs/code/environments/hieradata/hiera.yaml
 
     # Set-up firewall
     # https://www.digitalocean.com/community/tutorials/additional-recommended-steps-for-new-centos-7-servers
