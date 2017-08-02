@@ -24,6 +24,12 @@
       "puppet-proxy": "theforeman.example.com",
       "parameters": { "role": "CONSUL_SERVER" }
     },
+    "Nexus/Vagrant": {
+      "environment": "production",
+      "puppet-proxy": "theforeman.example.com",
+      "puppet-classes": "roles,repos",
+      "parameters": { "role": "NEXUS" }
+    },
     "dev_hadoop_nodes": {
       "environment": "production",
       "puppet-proxy": "theforeman.example.com"
@@ -68,6 +74,13 @@
   "ignored_nodes": {
   },
   "nodes": {
+    "nexus.example.com": {
+      "ip": "192.168.35.26",
+      "box": "puppetlabs/centos-7.2-64-puppet",
+      "memory": 3072,
+      "ports": [ {"host": 8081, "guest": 8081, "id": "ui"} ],
+      "hostgroup": "Nexus/Vagrant"
+    },
     "iis-01.example.com": {
       "ip": "192.168.36.50",
       "ports": [ {"host": 33389, "guest": 3389, "id": "rpd"} ],

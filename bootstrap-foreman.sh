@@ -20,8 +20,8 @@ else
     sudo yum -y install puppetserver puppet-agent puppet-agent-oauth foreman-installer nano nmap-ncat htop && \
     sudo foreman-installer --foreman-admin-password=admin \
                            --puppet-server-max-active-instances=1 \
-                           --puppet-server-jvm-min-heap-size=512M \
-                           --puppet-server-jvm-max-heap-size=512M \
+                           --puppet-server-jvm-min-heap-size=768M \
+                           --puppet-server-jvm-max-heap-size=768M \
                            --puppet-server-implementation=puppetserver \
                            --puppet-autosign=true \
                            --puppet-autosign-entries="*.example.com" \
