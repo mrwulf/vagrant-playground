@@ -1,0 +1,47 @@
+
+/*dependencies {
+  compileOnly "org.gradle:gradle-logging:${GradleVersion.current().getVersion()}"
+}*/
+
+ext.BOXNAME="theforeman.example.com"
+
+File marker = file("build/${BOXNAME}.marker")
+
+task vagrantDestroy(type: Exec) {
+  commandLine = ['vagrant', BOXNAME, '--force', 'destroy' ]
+  inputs { file 'VagrantFile' }
+  outputs { file marker }
+  doLast {marker.setText('') }
+  dependsOn vagrantUpdate
+}
+
+task vagrantUpdate(type: Exec) {
+  commandLine = ['vagrant', 'box',  BOXNAME, 'update' ]
+}
+
+task vagrantHalt(type: Exec) {
+  commandLine = [ 'vagrant', BOXNAME, 'halt' ]
+}
+
+task vagrantUp(type: Exec) {
+  commandLine = [ 'vagrant', BOXNAME, 'up' ]
+
+  dependsOn vagrantDestroy
+  finalizedBy vagrantHalt
+}
+
+/*
+File script = file("build/vagrant/${BOXNAME}.killer.sh")
+script.setText(
+  [ "function shutdown {",
+    "  vagrant halt ${BOXNAME}",
+    "  if [ \$? -ne 0 ]; then",
+    "    vagrant halt --force ${BOXNAME}",
+    "  fi",
+    "}",
+    "trap shutdown EXIT",
+    "read line" ].join(('\n'), 'UTF-8')
+ProcessBuilder proc = new ProcessBuilder()
+proc.command('bash', script.absolutePath)
+proc.start()
+*/

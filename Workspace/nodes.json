@@ -45,6 +45,12 @@
       "puppet-proxy": "theforeman.example.com",
       "parameters": { "role": "ELASTICSEARCH_UNIVERSAL" }
     },
+    "Elasticsearch/Cerebro": {
+      "puppet-classes": "roles,repos",
+      "environment": "production",
+      "puppet-proxy": "theforeman.example.com",
+      "parameters": { "role": "CEREBRO" }
+    },
     "Kafka/Vagrant": {
       "puppet-classes": "roles,repos",
       "environment": "production",
@@ -179,6 +185,11 @@
       "host_parameters": { "role": "ELASTICSEARCH_MASTER" },
       "box": "puppetlabs/centos-7.2-64-puppet",
       "ports": [ {"host": 9200, "guest": 9200, "id": "es"} ]
+    },
+    "es-ui.example.com": {
+      "ip": "192.168.35.41",
+      "box": "puppetlabs/centos-7.2-64-puppet",
+      "hostgroup": "Elasticsearch/Cerebro"
     },
     "es-01.example.com": {
       "ip": "192.168.35.31",
