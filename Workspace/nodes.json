@@ -1,250 +1,493 @@
 {
-  "hostgroups": {
-    "Aerospike/Vagrant": {
-      "puppet-classes": "roles,repos",
-      "environment": "production",
-      "puppet-proxy": "theforeman.example.com",
-      "parameters": { "role": "AEROSPIKE" }
+    "hostgroups": {
+        "Aerospike/Vagrant": {
+            "puppet-classes": "roles,repos",
+            "environment": "production",
+            "puppet-proxy": "theforeman.example.com",
+            "parameters": {
+                "role": "AEROSPIKE"
+            }
+        },
+        "Cassandra/Vagrant": {
+            "environment": "production",
+            "puppet-proxy": "theforeman.example.com",
+            "puppet-classes": "roles,repos",
+            "parameters": {
+                "role": "CASSANDRA"
+            }
+        },
+        "Consul/Vagrant_DC1": {
+            "puppet-classes": "roles,repos",
+            "environment": "production",
+            "puppet-proxy": "theforeman.example.com",
+            "parameters": {
+                "role": "CONSUL_REPLICA"
+            }
+        },
+        "Consul/Vagrant_DC2": {
+            "puppet-classes": "roles,repos",
+            "environment": "production",
+            "puppet-proxy": "theforeman.example.com",
+            "parameters": {
+                "role": "CONSUL_SERVER"
+            }
+        },
+        "Etcd/Vagrant": {
+          "environment": "production",
+          "puppet-proxy": "theforeman.example.com",
+          "puppet-classes": "roles,repos",
+          "parameters": {
+              "role": "ETCD"
+          }
+        },
+        "Kubernetes/Vagrant": {
+          "environment": "production",
+          "puppet-proxy": "theforeman.example.com",
+          "puppet-classes": "roles,repos",
+          "parameters": {
+              "role": "KUBERNETES_WORKER"
+          }
+        },
+        "Nexus/Vagrant": {
+            "environment": "production",
+            "puppet-proxy": "theforeman.example.com",
+            "puppet-classes": "roles,repos",
+            "parameters": {
+                "role": "NEXUS"
+            }
+        },
+        "dev_hadoop_nodes": {
+            "environment": "production",
+            "puppet-proxy": "theforeman.example.com"
+        },
+        "data_science": {
+            "puppet-classes": "profiles::data_science::common",
+            "environment": "production",
+            "puppet-proxy": "theforeman.example.com"
+        },
+        "Elasticsearch/Vagrant": {
+            "puppet-classes": "roles,repos",
+            "environment": "production",
+            "puppet-proxy": "theforeman.example.com",
+            "parameters": {
+                "role": "ELASTICSEARCH_UNIVERSAL"
+            }
+        },
+        "Elasticsearch/Cerebro": {
+            "puppet-classes": "roles,repos",
+            "environment": "production",
+            "puppet-proxy": "theforeman.example.com",
+            "parameters": {
+                "role": "CEREBRO"
+            }
+        },
+        "Kafka/Vagrant": {
+            "puppet-classes": "roles,repos",
+            "environment": "production",
+            "puppet-proxy": "theforeman.example.com",
+            "parameters": {
+                "role": "KAFKA"
+            }
+        },
+        "Metrics": {
+            "puppet-classes": "repos,roles",
+            "environment": "production",
+            "puppet-proxy": "theforeman.example.com",
+            "parameters": {
+                "role": "GRAFANA"
+            }
+        },
+        "RabbitMQ/Vagrant": {
+            "puppet-classes": "roles,repos",
+            "environment": "production",
+            "puppet-proxy": "theforeman.example.com",
+            "parameters": {
+                "role": "RABBITMQ"
+            }
+        }
     },
-    "Cassandra/Vagrant": {
-      "environment": "production",
-      "puppet-proxy": "theforeman.example.com",
-      "puppet-classes": "roles,repos",
-      "parameters": { "role": "CASSANDRA" }
+    "global_parameters": {
+        "location": "Vagrant",
+        "role": "UNSET",
+        "security_groups": "UNSET",
+        "security_users": "UNSET",
+        "vagrant": true
     },
-    "Consul/Vagrant_DC1": {
-      "puppet-classes": "roles,repos",
-      "environment": "production",
-      "puppet-proxy": "theforeman.example.com",
-      "parameters": { "role": "CONSUL_REPLICA" }
+    "ignored_nodes": {
     },
-    "Consul/Vagrant_DC2": {
-      "puppet-classes": "roles,repos",
-      "environment": "production",
-      "puppet-proxy": "theforeman.example.com",
-      "parameters": { "role": "CONSUL_SERVER" }
-    },
-    "Nexus/Vagrant": {
-      "environment": "production",
-      "puppet-proxy": "theforeman.example.com",
-      "puppet-classes": "roles,repos",
-      "parameters": { "role": "NEXUS" }
-    },
-    "dev_hadoop_nodes": {
-      "environment": "production",
-      "puppet-proxy": "theforeman.example.com"
-    },
-    "data_science": {
-      "puppet-classes": "profiles::data_science::common",
-      "environment": "production",
-      "puppet-proxy": "theforeman.example.com"
-    },
-    "Elasticsearch/Vagrant": {
-      "puppet-classes": "roles,repos",
-      "environment": "production",
-      "puppet-proxy": "theforeman.example.com",
-      "parameters": { "role": "ELASTICSEARCH_UNIVERSAL" }
-    },
-    "Elasticsearch/Cerebro": {
-      "puppet-classes": "roles,repos",
-      "environment": "production",
-      "puppet-proxy": "theforeman.example.com",
-      "parameters": { "role": "CEREBRO" }
-    },
-    "Kafka/Vagrant": {
-      "puppet-classes": "roles,repos",
-      "environment": "production",
-      "puppet-proxy": "theforeman.example.com",
-      "parameters": { "role": "KAFKA" }
-    },
-    "Metrics": {
-      "puppet-classes": "repos,profiles::influxdb",
-      "environment": "production",
-      "puppet-proxy": "theforeman.example.com",
-      "parameters": { "role": "METRICS_SERVER" }
-    },
-    "RabbitMQ/Vagrant": {
-      "puppet-classes": "roles,repos",
-      "environment": "production",
-      "puppet-proxy": "theforeman.example.com",
-      "parameters": { "role": "RABBITMQ" }
+    "nodes": {
+      "base-node-6.example.com": {
+          "ip": "192.168.36.11",
+          "ports": [
+          ],
+          "no-hostgroup": "Consul/Vagrant_DC1"
+      },
+      "base-node-7.example.com": {
+          "ip": "192.168.36.12",
+          "ports": [
+          ],
+          "box": "puppetlabs/centos-7.2-64-puppet",
+          "no-hostgroup": "Consul/Vagrant_DC1"
+      },
+        "cassandra-reaper.example.com": {
+            "ip": "192.168.35.26"
+        },
+        "consul-01.example.com": {
+            "ip": "192.168.36.10",
+            "ports": [
+                {
+                    "host": 8501,
+                    "guest": 8500,
+                    "id": "web-gui-8500"
+                },
+                {
+                    "host": 8580,
+                    "guest": 80,
+                    "id": "web-gui-80"
+                },
+                {
+                    "host": 8601,
+                    "guest": 8600,
+                    "id": "web-gui-8600"
+                },
+                {
+                    "host": 5300,
+                    "guest": 53,
+                    "id": "dns-53"
+                }
+            ],
+            "hostgroup": "Consul/Vagrant_DC1"
+        },
+        "consul-02.example.com": {
+            "ip": "192.168.36.11",
+            "ports": [
+                {
+                    "host": 8502,
+                    "guest": 8500,
+                    "id": "web-gui"
+                }
+            ],
+            "hostgroup": "Consul/Vagrant_DC1"
+        },
+        "consul-03.example.com": {
+            "ip": "192.168.36.12",
+            "ports": [
+                {
+                    "host": 8503,
+                    "guest": 8500,
+                    "id": "web-gui"
+                }
+            ],
+            "hostgroup": "Consul/Vagrant_DC2"
+        },
+        "cerebro.example.com": {
+            "ip": "192.168.35.42",
+            "hostgroup": "Elasticsearch/Cerebro",
+            "host_parameters": {
+                "role": "CEREBRO"
+            },
+            "box": "puppetlabs/centos-7.2-64-puppet",
+            "ports": [
+                {
+                    "host": 9000,
+                    "guest": 9000,
+                    "id": "ui"
+                },
+                {
+                    "host": 9001,
+                    "guest": 9001,
+                    "id": "backend"
+                }
+            ]
+        },
+        "es-master.example.com": {
+            "ip": "192.168.35.30",
+            "hostgroup": "Elasticsearch/Vagrant",
+            "host_parameters": {
+                "role": "ELASTICSEARCH_MASTER"
+            },
+            "box": "puppetlabs/centos-7.2-64-puppet",
+            "ports": [
+                {
+                    "host": 9200,
+                    "guest": 9200,
+                    "id": "es"
+                }
+            ]
+        },
+        "es-ui.example.com": {
+            "ip": "192.168.35.41",
+            "box": "puppetlabs/centos-7.2-64-puppet",
+            "hostgroup": "Elasticsearch/Cerebro"
+        },
+        "es-01.example.com": {
+            "ip": "192.168.35.31",
+            "box": "puppetlabs/centos-7.2-64-puppet",
+            "hostgroup": "Elasticsearch/Vagrant"
+        },
+        "es-02.example.com": {
+            "ip": "192.168.35.32",
+            "box": "puppetlabs/centos-7.2-64-puppet",
+            "hostgroup": "Elasticsearch/Vagrant"
+        },
+        "es-03.example.com": {
+            "ip": "192.168.35.33",
+            "box": "puppetlabs/centos-7.2-64-puppet",
+            "ignore-hostgroup": "Elasticsearch/Vagrant"
+        },
+        "es-client.example.com": {
+            "ip": "192.168.35.35",
+            "box": "puppetlabs/centos-7.2-64-puppet",
+            "role": "elasticsearch_client"
+        },
+        "etcd.example.com": {
+            "ip": "192.168.35.37",
+            "box": "centos/7",
+            "hostgroup": "Etcd/Vagrant"
+        },
+        "k8-bootstrap.example.com": {
+            "ip": "192.168.35.41",
+            "box": "centos/7",
+            "memory": 2048,
+            "hostgroup": "Kubernetes/Vagrant",
+            "host_parameters": {
+                "role": "KUBERNETES_BOOTSTRAP"
+            }
+        },
+        "k8-controller.example.com": {
+            "ip": "192.168.35.42",
+            "box": "centos/7",
+            "hostgroup": "Kubernetes/Vagrant",
+            "host_parameters": {
+                "role": "KUBERNETES_CONTROLLER"
+            }
+        },
+        "k8-01.example.com": {
+            "ip": "192.168.35.43",
+            "box": "centos/7",
+            "hostgroup": "Kubernetes/Vagrant"
+        },
+        "nexus.example.com": {
+            "ip": "192.168.35.26",
+            "box": "centos/7",
+            "memory": 3072,
+            "ports": [
+                {
+                    "host": 80,
+                    "guest": 80,
+                    "id": "ui"
+                },
+                {
+                    "host": 1443,
+                    "guest": 443,
+                    "id": "ui-ssl"
+                }
+
+            ],
+            "hostgroup": "Nexus/Vagrant"
+        },
+        "iis-01.example.com": {
+            "ip": "192.168.36.50",
+            "ports": [
+                {
+                    "host": 33389,
+                    "guest": 3389,
+                    "id": "rpd"
+                }
+            ],
+            "box": "win2012r2",
+            "bootstrap": "bootstrap-node-win.bat",
+            "classes": "profiles::windows::core"
+        },
+        "aero-01.example.com": {
+            "ip": "192.168.35.10",
+            "ports": [
+                {
+                    "host": 8081,
+                    "guest": 8081,
+                    "id": "amc"
+                }
+            ],
+            "hostgroup": "Aerospike/Vagrant"
+        },
+        "aero-02.example.com": {
+            "ip": "192.168.35.11",
+            "ports": [
+                {
+                    "host": 8082,
+                    "guest": 8081,
+                    "id": "amc"
+                }
+            ],
+            "hostgroup": "Aerospike/Vagrant"
+        },
+        "kafka-01.example.com": {
+            "ip": "192.168.35.18",
+            "ports": [
+                {
+                    "host": 8081,
+                    "guest": 8081,
+                    "id": "amc"
+                }
+            ],
+            "hostgroup": "Kafka/Vagrant"
+        },
+        "kafka-02.example.com": {
+            "ip": "192.168.35.19",
+            "ports": [
+                {
+                    "host": 8082,
+                    "guest": 8081,
+                    "id": "amc"
+                }
+            ],
+            "hostgroup": "Kafka/Vagrant"
+        },
+        "elk-01.example.com": {
+            "ip": "192.168.35.21",
+            "ports": [
+                {
+                    "host": 5601,
+                    "guest": 5601,
+                    "id": "kibana"
+                },
+                {
+                    "host": 9200,
+                    "guest": 9200,
+                    "id": "es"
+                }
+            ],
+            "classes": "repos,profiles::elk",
+            "host_parameters": {
+                "role": "ELK_SERVER"
+            }
+        },
+        "memcached-01.example.com": {
+            "ip": "192.168.36.10",
+            "ports": [
+                {
+                    "host": 11211,
+                    "guest": 11211,
+                    "id": "interface"
+                }
+            ],
+            "classes": "profiles::memcached"
+        },
+        "memcached-02.example.com": {
+            "ip": "192.168.36.11",
+            "ports": [
+                {
+                    "host": 11311,
+                    "guest": 11211,
+                    "id": "interface"
+                }
+            ],
+            "classes": "profiles::memcached"
+        },
+        "rabbitmq-01.example.com": {
+            "ip": "192.168.36.15",
+            "ports": [
+                {
+                    "host": 55672,
+                    "guest": 55672,
+                    "id": "web-gui"
+                },
+                {
+                    "host": 8081,
+                    "guest": 80,
+                    "id": "web-gui-2"
+                }
+            ],
+            "hostgroup": "RabbitMQ/Vagrant"
+        },
+        "rabbitmq-02.example.com": {
+            "ip": "192.168.36.16",
+            "ports": [
+                {
+                    "host": 45672,
+                    "guest": 55672,
+                    "id": "web-gui"
+                }
+            ],
+            "hostgroup": "RabbitMQ/Vagrant"
+        },
+        "rabbitmq-03.example.com": {
+            "ip": "192.168.36.12",
+            "ports": [
+                {
+                    "host": 35672,
+                    "guest": 55672,
+                    "id": "web-gui"
+                }
+            ],
+            "hostgroup": "RabbitMQ/Vagrant"
+        },
+        "metrics.example.com": {
+            "ip": "192.168.36.20",
+            "box": "puppetlabs/centos-7.2-64-puppet",
+            "ports": [
+                {
+                    "host": 8083,
+                    "guest": 8083,
+                    "id": "web-gui"
+                },
+                {
+                    "host": 8086,
+                    "guest": 8086,
+                    "id": "rest"
+                }
+            ],
+            "hostgroup": "Metrics"
+        },
+        "graph.example.com": {
+            "ip": "192.168.36.21",
+            "classes": "profiles::grafana",
+            "ports": [
+                {
+                    "host": 8080,
+                    "guest": 80,
+                    "id": "web-gui"
+                }
+            ],
+            "host_parameters": {
+                "role": "GRAPHING_SERVER"
+            }
+        },
+        "datascience.example.com": {
+            "ip": "192.168.35.10",
+            "hostgroup": "data_science"
+        },
+        "hadoop01.example.com": {
+            "ip": "192.168.36.10",
+            "hostgroup": "dev_hadoop_nodes"
+        },
+        "cassandra-01.example.com": {
+            "ip": "192.168.35.20",
+            "box": "puppetlabs/centos-7.2-64-puppet",
+            "hostgroup": "Cassandra/Vagrant"
+        },
+        "cassandra-02.example.com": {
+            "ip": "192.168.35.21",
+            "box": "puppetlabs/centos-7.2-64-puppet",
+            "hostgroup": "Cassandra/Vagrant"
+        },
+        "cassandra-03.example.com": {
+            "ip": "192.168.35.22",
+            "box": "puppetlabs/centos-7.2-64-puppet",
+            "hostgroup": "Cassandra/Vagrant"
+        },
+        "cassandra-04.example.com": {
+            "ip": "192.168.35.23",
+            "hostgroup": "Cassandra/Vagrant"
+        },
+        "cassandra-05.example.com": {
+            "ip": "192.168.35.24",
+            "hostgroup": "Cassandra/Vagrant"
+        },
+        "cassandra-06.example.com": {
+            "ip": "192.168.35.25",
+            "hostgroup": "Cassandra/Vagrant"
+        }
+
     }
-  },
-  "global_parameters": {
-    "location": "Vagrant",
-    "role": "UNSET",
-    "security_groups": "UNSET",
-    "security_users": "UNSET",
-    "vagrant": true
-  },
-  "ignored_nodes": {
-  },
-  "nodes": {
-    "nexus.example.com": {
-      "ip": "192.168.35.26",
-      "box": "puppetlabs/centos-7.2-64-puppet",
-      "memory": 3072,
-      "ports": [ {"host": 8081, "guest": 8081, "id": "ui"} ],
-      "hostgroup": "Nexus/Vagrant"
-    },
-    "iis-01.example.com": {
-      "ip": "192.168.36.50",
-      "ports": [ {"host": 33389, "guest": 3389, "id": "rpd"} ],
-      "box": "win2012r2",
-      "bootstrap": "bootstrap-node-win.bat",
-      "classes": "profiles::windows::core"
-    },
-    "aero-01.example.com": {
-      "ip": "192.168.35.10",
-      "ports": [ {"host": 8081, "guest": 8081, "id": "amc"} ],
-      "hostgroup": "Aerospike/Vagrant"
-    },
-    "aero-02.example.com": {
-      "ip": "192.168.35.11",
-      "ports": [ {"host": 8082, "guest": 8081, "id": "amc"} ],
-      "hostgroup": "Aerospike/Vagrant"
-    },
-    "kafka-01.example.com": {
-      "ip": "192.168.35.18",
-      "ports": [ {"host": 8081, "guest": 8081, "id": "amc"} ],
-      "hostgroup": "Kafka/Vagrant"
-    },
-    "kafka-02.example.com": {
-      "ip": "192.168.35.19",
-      "ports": [ {"host": 8082, "guest": 8081, "id": "amc"} ],
-      "hostgroup": "Kafka/Vagrant"
-    },
-    "elk-01.example.com": {
-      "ip": "192.168.35.21",
-      "ports": [ {"host": 5601, "guest": 5601, "id": "kibana"},
-                 {"host": 9200, "guest": 9200, "id": "es"} ],
-      "classes": "repos,profiles::elk",
-      "host_parameters": { "role": "ELK_SERVER" }
-    },
-    "memcached-01.example.com": {
-      "ip": "192.168.36.10",
-      "ports": [ {"host": 11211, "guest": 11211, "id": "interface"} ],
-      "classes": "profiles::memcached"
-    },
-    "memcached-02.example.com": {
-      "ip": "192.168.36.11",
-      "ports": [ {"host": 11311, "guest": 11211, "id": "interface"} ],
-      "classes": "profiles::memcached"
-    },
-    "rabbitmq-01.example.com": {
-      "ip": "192.168.36.15",
-      "ports": [ {"host": 55672, "guest": 55672, "id": "web-gui"},
-                 {"host": 8081, "guest": 80, "id": "web-gui-2"}],
-      "hostgroup": "RabbitMQ/Vagrant"
-    },
-    "rabbitmq-02.example.com": {
-      "ip": "192.168.36.16",
-      "ports": [ {"host": 45672, "guest": 55672, "id": "web-gui"} ],
-      "hostgroup": "RabbitMQ/Vagrant"
-    },
-    "rabbitmq-03.example.com": {
-      "ip": "192.168.36.12",
-      "ports": [ {"host": 35672, "guest": 55672, "id": "web-gui"} ],
-      "hostgroup": "RabbitMQ/Vagrant"
-    },
-    "consul-01.example.com": {
-      "ip": "192.168.36.10",
-      "ports": [ {"host": 8501, "guest": 8500, "id": "web-gui-8500"},
-                 {"host": 8580, "guest": 80, "id": "web-gui-80"},
-                 {"host": 8601, "guest": 8600, "id": "web-gui-8600"},
-                 {"host": 5300, "guest": 53, "id": "dns-53"} ],
-      "hostgroup": "Consul/Vagrant_DC1"
-    },
-    "consul-02.example.com": {
-      "ip": "192.168.36.11",
-      "ports": [ {"host": 8502, "guest": 8500, "id": "web-gui"} ],
-      "hostgroup": "Consul/Vagrant_DC1"
-    },
-    "consul-03.example.com": {
-      "ip": "192.168.36.12",
-      "ports": [ {"host": 8503, "guest": 8500, "id": "web-gui"} ],
-      "hostgroup": "Consul/Vagrant_DC2"
-    },
-    "metrics.example.com": {
-      "ip": "192.168.36.20",
-      "ports": [ {"host": 8083, "guest": 8083, "id": "web-gui"},
-                 {"host": 8086, "guest": 8086, "id": "rest"}     ],
-      "hostgroup": "Metrics",
-      "host_parameters": { "role": "METRICS_SERVER" }
-    },
-    "graph.example.com": {
-      "ip": "192.168.36.21",
-      "classes": "profiles::grafana",
-      "ports": [ {"host": 8080, "guest": 80, "id": "web-gui"} ],
-      "classes": "profiles::grafana",
-      "host_parameters": { "role": "GRAPHING_SERVER" }
-    },
-    "es-master.example.com": {
-      "ip": "192.168.35.30",
-      "hostgroup": "Elasticsearch/Vagrant",
-      "host_parameters": { "role": "ELASTICSEARCH_MASTER" },
-      "box": "puppetlabs/centos-7.2-64-puppet",
-      "ports": [ {"host": 9200, "guest": 9200, "id": "es"} ]
-    },
-    "es-ui.example.com": {
-      "ip": "192.168.35.41",
-      "box": "puppetlabs/centos-7.2-64-puppet",
-      "hostgroup": "Elasticsearch/Cerebro"
-    },
-    "es-01.example.com": {
-      "ip": "192.168.35.31",
-      "box": "puppetlabs/centos-7.2-64-puppet",
-      "hostgroup": "Elasticsearch/Vagrant"
-    },
-    "es-02.example.com": {
-      "ip": "192.168.35.32",
-      "box": "puppetlabs/centos-7.2-64-puppet",
-      "hostgroup": "Elasticsearch/Vagrant"
-    },
-    "es-03.example.com": {
-      "ip": "192.168.35.33",
-      "box": "puppetlabs/centos-7.2-64-puppet",
-      "ignore-hostgroup": "Elasticsearch/Vagrant"
-    },
-    "es-client.example.com": {
-      "ip": "192.168.35.35",
-      "box": "puppetlabs/centos-7.2-64-puppet",
-      "role": "elasticsearch_client"
-    },
-    "datascience.example.com": {
-      "ip": "192.168.35.10",
-      "hostgroup": "data_science"
-    },
-    "hadoop01.example.com": {
-      "ip": "192.168.36.10",
-      "hostgroup": "dev_hadoop_nodes"
-    },
-    "cassandra-01.example.com": {
-      "ip": "192.168.35.20",
-      "box": "puppetlabs/centos-7.2-64-puppet",
-      "hostgroup": "Cassandra/Vagrant"
-    },
-    "cassandra-02.example.com": {
-      "ip": "192.168.35.21",
-      "box": "puppetlabs/centos-7.2-64-puppet",
-      "hostgroup": "Cassandra/Vagrant"
-    },
-    "cassandra-03.example.com": {
-      "ip": "192.168.35.22",
-      "box": "puppetlabs/centos-7.2-64-puppet",
-      "hostgroup": "Cassandra/Vagrant"
-    },
-    "cassandra-04.example.com": {
-      "ip": "192.168.35.23",
-      "hostgroup": "Cassandra/Vagrant"
-    },
-    "cassandra-05.example.com": {
-      "ip": "192.168.35.24",
-      "hostgroup": "Cassandra/Vagrant"
-    },
-    "cassandra-06.example.com": {
-      "ip": "192.168.35.25",
-      "hostgroup": "Cassandra/Vagrant"
-    }
-  }
 }

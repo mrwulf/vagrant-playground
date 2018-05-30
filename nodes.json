@@ -6,9 +6,9 @@
       "mounts": [ {"host":  "Workspace/puppet/", "guest": "/etc/puppetlabs/code/environments/production"},
                   {"host":  "Workspace/hiera/", "guest": "/etc/puppetlabs/code/environments/hieradata"}
         ],
-      "memory": 1536,
+      "memory": 2560,
       "box": "puppetlabs/centos-7.2-64-nocm",
-      "bootstrap": "bootstrap-foreman.sh"
+      "bootstrap": "scripts/bootstrap-foreman.sh"
     }
   },
   "default_node": {
@@ -17,6 +17,6 @@
     "memory": 1024,
     "autostart": false,
     "box": "puppetlabs/centos-6.6-64-puppet",
-    "bootstrap": "bootstrap-node-rhel.sh"
+    "bootstrap": "scripts/bootstrap-node-rhel.sh"
   }
 }

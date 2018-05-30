@@ -1,13 +1,83 @@
 plugins {
     id "com.bmuschko.vagrant-base" version "2.1"
+    id "org.hidetake.ssh" version "2.9.0"
 }
+
+import com.bmuschko.gradle.vagrant.tasks.*
+import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.4'
+}
+
 vagrant {
     installation {
         validate = false
     }
 }
-import com.bmuschko.gradle.vagrant.tasks.*
 
-task vstatus(type: VagrantStatus) {
+task startForeman(type: VagrantUp) {
+    description = "Start up foreman"
+    group = "Playground"
+}
 
+task initializePlayground {
+    description = "Set up the Playground and invite all of the kids"
+    group = "Playground"
+    // Check out hiera branch
+    // Check out puppet branch
+}
+
+task disableNodes {
+    description = 'Disable all workspace nodes'
+    group = "Playground"
+    doFirst {
+        def jsonObject = new JsonSlurper().parse(new File('Workspace/nodes.json'))
+
+        jsonObject.ignored_nodes += jsonObject.nodes
+        jsonObject.nodes = [:]
+
+        File outFile = new File('Workspace/nodes.json')
+        outFile.createNewFile()
+        outFile.text = JsonOutput.prettyPrint(JsonOutput.toJson(jsonObject))
+    }
+}
+
+task enableCluster {
+    description = 'Enable all workspace nodes matching a pattern'
+    group = "Playground"
+    doFirst {
+        def jsonObject = new JsonSlurper().parse(new File('Workspace/nodes.json'))
+
+        println "Total nodes: ${jsonObject.ignored_nodes.size()}"
+
+        def subset = jsonObject.ignored_nodes.findAll { it.key =~ /es-/ }
+
+        println "Enabled Nodes: ${subset.size()}"
+
+        jsonObject.nodes += subset
+        jsonObject.ignored_nodes -= subset
+
+        File outFile = new File('Workspace/nodes.json')
+        outFile.createNewFile()
+        outFile.text = JsonOutput.prettyPrint(JsonOutput.toJson(jsonObject))
+    }
+    shouldRunAfter disableNodes
+}
+
+task availableNodes {
+    description = 'Show all available nodes'
+    group = "Playground"
+    doFirst {
+        def jsonObject = new JsonSlurper().parse(new File('Workspace/nodes.json'))
+
+        def subset = jsonObject.ignored_nodes + jsonObject.nodes //as LinkedHashSet
+
+        println "Total nodes: ${subset.size()}"
+
+        def subsetNames = subset.keySet() as String[]
+
+        println "Available Nodes: ${subsetNames.sort()}"
+    }
 }

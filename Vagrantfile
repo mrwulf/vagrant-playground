@@ -1,6 +1,3 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
-
 # Builds single Foreman server and
 # multiple Puppet Agent Nodes using JSON config file
 # read vm and configurations from JSON files
@@ -9,6 +6,8 @@ FOREMAN     = 'theforeman.example.com'
 WORKSPACE   = 'Workspace'
 PUPPET_REPO = "#{WORKSPACE}/puppet/"
 HIERA_REPO  = "#{WORKSPACE}/hiera/"
+
+ENV["VAGRANT_DEFAULT_PROVIDER"] = 'virtualbox'
 
 # Helpful functions
 def multi_merge(*args)
@@ -62,14 +61,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     node_values[:autostart] = true if node_values[:autostart].nil?
 
     config.vbguest.auto_update = true
-    config.hostmanager.enabled = true
+    config.hostmanager.enabled = false
     config.hostmanager.manage_host = true
     config.hostmanager.ignore_private_ip = false
     config.hostmanager.include_offline = false
-
+    config.timezone.value = "America/Los_Angeles"
     #config.windows.set_work_network = true
-    config.winrm.usuername = "vagrant"
-    config.winrm.password = "vagrant"
+    #config.winrm.usuername = "vagrant"
+    #config.winrm.password = "vagrant"
 
   # Manage foreman hostgroups
     if node_name == FOREMAN then
@@ -93,8 +92,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           safe_run_remote "sudo hammer global-parameter set --name \"#{globalparm}\" --value \"#{globalvalue}\""
         end
       end
+      config.vm.provision :hostmanager
     else
       config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+      #config.vm.linked_clone = true
 
       # check that foreman is running... vagrant status | grep theforeman\W*\w+running &&
       # Add/Remove nodes from hostgroups
@@ -125,14 +126,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       boxconfig.vm.box = node_values[:box]
       boxconfig.vm.hostname = node_values[:box].include?('win') ? short_name : node_name
-      boxconfig.vm.network "private_network", ip: node_values[:ip], netmask: "255.255.192.0", name: 'eth1'
+      boxconfig.vm.network "private_network", ip: node_values[:ip], netmask: "255.255.192.0" # removed for linux #, name: 'eth1'
       boxconfig.hostmanager.aliases = [ short_name ]
 
-      if node_values[:box].include?('win') then
-        #boxconfig.hostmanager.manage_guest = false
-        boxconfig.vm.communicator = "winrm"
-        boxconfig.vm.network "forwarded_port", guest: 5985, host: 5985, id: "winrm", auto_correct: true, host_ip: "127.0.0.1"
-      end
+      #if node_values[:box].include?('win') then
+      #  #boxconfig.hostmanager.manage_guest = false
+      #  boxconfig.vm.communicator = "winrm"
+      #  boxconfig.vm.network "forwarded_port", guest: 5985, host: 5985, id: "winrm", auto_correct: true, host_ip: "127.0.0.1"
+      #end
 
       # configures all forwarding ports in JSON array
       node_values[:ports].each do |port|
@@ -155,6 +156,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end
 
       boxconfig.vm.provision :shell, :path => node_values[:bootstrap]
+      boxconfig.vm.provision :hostmanager
     end
   end
 end
