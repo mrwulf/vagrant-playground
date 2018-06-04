@@ -89,6 +89,4 @@ build/
 /.idea
 
 # Workspace
-Workspace/puppet/
-Workspace/hiera/
-Workspace/python/
+Workspace/

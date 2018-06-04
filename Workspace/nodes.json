@@ -308,6 +308,7 @@
                     "id": "amc"
                 }
             ],
+            "box": "puppetlabs/centos-7.2-64-puppet",
             "hostgroup": "Aerospike/Vagrant"
         },
         "aero-02.example.com": {
@@ -319,6 +320,7 @@
                     "id": "amc"
                 }
             ],
+            "ignore-box": "puppetlabs/centos-7.2-64-puppet",
             "hostgroup": "Aerospike/Vagrant"
         },
         "kafka-01.example.com": {

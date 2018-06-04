@@ -25,7 +25,7 @@ def safe_run_remote(command)
 end
 
 def deep_symbolize(obj)
-    return obj.inject({}){|memo,(k,v)| memo[k.to_sym] =  deep_symbolize(v); memo} if obj.is_a? Hash
+    return obj.inject({}){|memo,(k,v)| memo[k.intern] =  deep_symbolize(v); memo} if obj.is_a? Hash
     return obj.inject([]){|memo,v    | memo           << deep_symbolize(v); memo} if obj.is_a? Array
     return obj
 end
@@ -40,10 +40,10 @@ $defaultnode_config = multi_merge( base_config[:default_node], workspace_config[
 
 def node_config(name)
   node_defaultconfig   = $defaultnode_config
-  node_values          = $nodes_config[ name.to_sym ]
+  node_values          = $nodes_config[ name.intern ]
   node_hostgroupconfig = {}
-  if node_values[ :hostgroup ] and $hostgroup_config[ node_values[ :hostgroup ].to_sym ] then
-    node_hostgroupconfig = $hostgroup_config[ node_values[:hostgroup].to_sym ][ :default_node ]
+  if node_values[ :hostgroup ] and $hostgroup_config[ node_values[ :hostgroup ].intern ] then
+    node_hostgroupconfig = $hostgroup_config[ node_values[:hostgroup].intern ][ :default_node ]
   end
 
   multi_merge( node_defaultconfig,
@@ -72,7 +72,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Manage foreman hostgroups
     if node_name == FOREMAN then
-      config.trigger.after [:up, :resume, :provision, :reload], :vm => [node_name] do |trigger|
+      config.trigger.after [:up, :resume, :provision, :reload] do |trigger|
         $hostgroup_config.each do |hostgroup_name, hostgroup_values|
           hostgroup_command = "sudo hammer hostgroup create --name \"#{hostgroup_name}\""
 
@@ -99,7 +99,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       # check that foreman is running... vagrant status | grep theforeman\W*\w+running &&
       # Add/Remove nodes from hostgroups
-      config.trigger.after [:up, :provision, :reload], :vm => [node_name] do |trigger|
+      config.trigger.after [:up, :provision, :reload] do |trigger|
         if !node_values[:hostgroup].nil? then
           safe_run "vagrant ssh #{FOREMAN} -- -t \"sudo hammer host update --name #{node_name} --hostgroup #{node_values[:hostgroup]}\""
         end
@@ -115,7 +115,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         #safe_run_remote "sudo puppet agent --test || true"
       end
 
-      config.trigger.after :destroy, :vm => [node_name] do |trigger|
+      config.trigger.after :destroy do |trigger|
         safe_run "vagrant ssh #{FOREMAN} -- -t \"sudo hammer host delete --name #{node_name}\" || true"
         safe_run "vagrant ssh #{FOREMAN} -- -t \"sudo puppet cert clean #{node_name}\" || true"
       end
