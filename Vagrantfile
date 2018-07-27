@@ -14,16 +14,6 @@ def multi_merge(*args)
   args.compact.reduce( {}, &:merge! )
 end
 
-def safe_run(command)
-  run command
-  rescue
-end
-
-def safe_run_remote(command)
-  run_remote command
-  rescue
-end
-
 def deep_symbolize(obj)
     return obj.inject({}){|memo,(k,v)| memo[k.intern] =  deep_symbolize(v); memo} if obj.is_a? Hash
     return obj.inject([]){|memo,v    | memo           << deep_symbolize(v); memo} if obj.is_a? Array
@@ -31,7 +21,7 @@ def deep_symbolize(obj)
 end
 
 base_config = deep_symbolize JSON.parse(File.read(CONFIG_FILE))
-workspace_config = deep_symbolize JSON.parse(File.read("#{WORKSPACE}/#{CONFIG_FILE}")) || {}
+workspace_config = deep_symbolize JSON.parse(File.read("#{WORKSPACE}/#{CONFIG_FILE}")) ; {}
 
 $nodes_config = multi_merge( base_config[:nodes], workspace_config[:nodes] )
 $hostgroup_config = multi_merge( base_config[:hostgroups], workspace_config[:hostgroups] )
@@ -70,64 +60,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #config.winrm.usuername = "vagrant"
     #config.winrm.password = "vagrant"
 
-  # Manage foreman hostgroups
-    if node_name == FOREMAN then
-      config.trigger.after [:up, :resume, :provision, :reload] do |trigger|
-        $hostgroup_config.each do |hostgroup_name, hostgroup_values|
-          hostgroup_command = "sudo hammer hostgroup create --name \"#{hostgroup_name}\""
-
-          hostgroup_values.each do |option, value|
-            next if option == :parameters
-            next if option == :default_node
-            hostgroup_command = "#{hostgroup_command} --#{option} \"#{value}\""
-          end
-          safe_run_remote hostgroup_command
-          if hostgroup_values[:parameters].respond_to?(:each) then
-            hostgroup_values[:parameters].each do |hostgroup_parameter, value|
-              safe_run_remote "sudo hammer hostgroup set-parameter --hostgroup \"#{hostgroup_name}\" --name \"#{hostgroup_parameter}\" --value \"#{value}\""
-            end
-          end
-        end
-        $globalparms_config.each do |globalparm, globalvalue|
-          safe_run_remote "sudo hammer global-parameter set --name \"#{globalparm}\" --value \"#{globalvalue}\""
-        end
-      end
-      config.vm.provision :hostmanager
-    else
-      config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
-      #config.vm.linked_clone = true
-
-      # check that foreman is running... vagrant status | grep theforeman\W*\w+running &&
-      # Add/Remove nodes from hostgroups
-      config.trigger.after [:up, :provision, :reload] do |trigger|
-        if !node_values[:hostgroup].nil? then
-          safe_run "vagrant ssh #{FOREMAN} -- -t \"sudo hammer host update --name #{node_name} --hostgroup #{node_values[:hostgroup]}\""
-        end
-        if node_values[:classes] then
-          safe_run "vagrant ssh #{FOREMAN} -- -t \"sudo hammer host update --name #{node_name} --puppet-classes #{node_values[:classes]}\""
-        end
-        if node_values[:host_parameters] then
-          node_values[:host_parameters].each do |param_key, param_value|
-            safe_run "vagrant ssh #{FOREMAN} -- -t \"sudo hammer host update --name #{node_name} --parameters '#{param_key}=#{param_value}'\""
-          end
-        end
-
-        #safe_run_remote "sudo puppet agent --test || true"
-      end
-
-      config.trigger.after :destroy do |trigger|
-        safe_run "vagrant ssh #{FOREMAN} -- -t \"sudo hammer host delete --name #{node_name}\" || true"
-        safe_run "vagrant ssh #{FOREMAN} -- -t \"sudo puppet cert clean #{node_name}\" || true"
-      end
-    end
-
     config.vm.define node_name, autostart: node_values[:autostart] do |boxconfig|
       short_name = node_name[/([^.]*)/,0]
 
       boxconfig.vm.box = node_values[:box]
       boxconfig.vm.hostname = node_values[:box].include?('win') ? short_name : node_name
       boxconfig.vm.network "private_network", ip: node_values[:ip], netmask: "255.255.192.0" # removed for linux #, name: 'eth1'
-      boxconfig.hostmanager.aliases = [ short_name ]
+      boxconfig.hostmanager.aliases = [ short_name, node_values[:box] ]
 
       #if node_values[:box].include?('win') then
       #  #boxconfig.hostmanager.manage_guest = false
@@ -155,8 +94,70 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         vb.gui = false
       end
 
-      boxconfig.vm.provision :shell, :path => node_values[:bootstrap]
       boxconfig.vm.provision :hostmanager
+      boxconfig.vm.provision :shell, :path => node_values[:bootstrap]
+
+      # Manage foreman hostgroups
+      if node_name == FOREMAN then
+        boxconfig.trigger.after [:up, :resume, :provision] do |mytrigger|
+          trigger_remote_command = ""
+          $hostgroup_config.each do |hostgroup_name, hostgroup_values|
+            hostgroup_command = "sudo hammer hostgroup create --name \"#{hostgroup_name}\""
+
+            hostgroup_values.each do |option, value|
+              next if option == :parameters
+              next if option == :default_node
+              hostgroup_command = "#{hostgroup_command} --#{option} \"#{value}\""
+            end
+            trigger_remote_command += "#{hostgroup_command} ; "
+            if hostgroup_values[:parameters].respond_to?(:each) then
+              hostgroup_values[:parameters].each do |hostgroup_parameter, value|
+                trigger_remote_command += "sudo hammer hostgroup set-parameter --hostgroup \"#{hostgroup_name}\" --name \"#{hostgroup_parameter}\" --value \"#{value}\" ; "
+              end
+            end
+          end
+          $globalparms_config.each do |globalparm, globalvalue|
+            trigger_remote_command += "sudo hammer global-parameter set --name \"#{globalparm}\" --value \"#{globalvalue}\" ; "
+          end
+
+          mytrigger.info = "Setting Up Hostgroups and Global Parameters"
+          mytrigger.run_remote = {inline: "#{trigger_remote_command} true"} unless trigger_remote_command.empty?
+        end
+      else
+        boxconfig.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+        #config.vm.linked_clone = true
+
+        # check that foreman is running... vagrant status | grep theforeman\W*\w+running &&
+        # Add/Remove nodes from hostgroups
+        boxconfig.trigger.after [:up, :provision] do |mytrigger|
+          trigger_command = ""
+          if !node_values[:hostgroup].nil? then
+            trigger_command += "vagrant ssh #{FOREMAN} -c 'sudo hammer host update --name #{node_name} --hostgroup #{node_values[:hostgroup]}' ; "
+          end
+          if node_values[:host_parameters] then
+            params = ""
+            node_values[:host_parameters].each do |param_key, param_value|
+              params += "#{param_key}=#{param_value}"
+            end
+            trigger_command += "vagrant ssh #{FOREMAN} -c 'sudo hammer host update --name #{node_name} --parameters #{params}' ; "
+          end
+          if node_values[:classes] then
+            trigger_command += "vagrant ssh #{FOREMAN} -c 'sudo hammer host update --name #{node_name} --puppet-classes #{node_values[:classes]}' ; "
+          end
+
+          mytrigger.info = "Setting up this host in foreman"
+          mytrigger.run = {inline: "bash -c \"#{trigger_command} \""} unless trigger_command.empty?
+        end
+
+        boxconfig.trigger.after :destroy do |mytrigger|
+          trigger_command = ""
+          trigger_command += "vagrant ssh -c \"sudo hammer host delete --name #{node_name}\" #{FOREMAN} ; "
+          trigger_command += "vagrant ssh -c \"sudo puppet cert clean #{node_name}\" #{FOREMAN} ; "
+
+          mytrigger.info = "Cleaning up this host in foreman"
+          mytrigger.run = {inline: "bash -c '#{trigger_command}'"} unless trigger_command.empty?
+        end
+      end
     end
   end
 end
