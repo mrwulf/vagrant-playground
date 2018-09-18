@@ -144,6 +144,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           if node_values[:classes] then
             trigger_command += "vagrant ssh #{FOREMAN} -c 'sudo hammer host update --name #{node_name} --puppet-classes #{node_values[:classes]}' ; "
           end
+          trigger_command += "vagrant ssh #{node_name} -c 'sudo puppet agent --test' ; "
 
           mytrigger.info = "Setting up this host in foreman"
           mytrigger.run = {inline: "bash -c \"#{trigger_command} \""} unless trigger_command.empty?

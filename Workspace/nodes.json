@@ -206,7 +206,7 @@
             "host_parameters": {
                 "role": "ELASTICSEARCH_MASTER"
             },
-            "box": "puppetlabs/centos-7.2-64-puppet",
+            "box": "centos/7",
             "ports": [
                 {
                     "host": 9200,
@@ -222,17 +222,17 @@
         },
         "es-01.example.com": {
             "ip": "192.168.35.31",
-            "box": "puppetlabs/centos-7.2-64-puppet",
+            "box": "centos/7",
             "hostgroup": "Elasticsearch/Vagrant"
         },
         "es-02.example.com": {
             "ip": "192.168.35.32",
-            "box": "puppetlabs/centos-7.2-64-puppet",
+            "box": "centos/7",
             "hostgroup": "Elasticsearch/Vagrant"
         },
         "es-03.example.com": {
             "ip": "192.168.35.33",
-            "box": "puppetlabs/centos-7.2-64-puppet",
+            "box": "centos/7",
             "ignore-hostgroup": "Elasticsearch/Vagrant"
         },
         "es-client.example.com": {
@@ -245,25 +245,35 @@
             "box": "centos/7",
             "hostgroup": "Etcd/Vagrant"
         },
-        "k8-bootstrap.example.com": {
+        "k8-ctrl-01.example.com": {
             "ip": "192.168.35.41",
             "box": "centos/7",
             "memory": 2048,
             "hostgroup": "Kubernetes/Vagrant",
             "host_parameters": {
-                "role": "KUBERNETES_BOOTSTRAP"
+                "role": "KUBERNETES_CONTROLLER"
             }
         },
-        "k8-controller.example.com": {
+        "k8-ctrl-02.example.com": {
             "ip": "192.168.35.42",
             "box": "centos/7",
+            "memory": 2048,
+            "hostgroup": "Kubernetes/Vagrant",
+            "host_parameters": {
+                "role": "KUBERNETES_CONTROLLER"
+            }
+        },
+        "k8-ctrl-03.example.com": {
+            "ip": "192.168.35.43",
+            "box": "centos/7",
+            "memory": 2048,
             "hostgroup": "Kubernetes/Vagrant",
             "host_parameters": {
                 "role": "KUBERNETES_CONTROLLER"
             }
         },
         "k8-01.example.com": {
-            "ip": "192.168.35.43",
+            "ip": "192.168.35.44",
             "box": "centos/7",
             "hostgroup": "Kubernetes/Vagrant"
         },
@@ -308,7 +318,7 @@
                     "id": "amc"
                 }
             ],
-            "box": "puppetlabs/centos-7.2-64-puppet",
+            "box": "centos/7",
             "hostgroup": "Aerospike/Vagrant"
         },
         "aero-02.example.com": {
@@ -320,7 +330,7 @@
                     "id": "amc"
                 }
             ],
-            "ignore-box": "puppetlabs/centos-7.2-64-puppet",
+            "box": "centos/7",
             "hostgroup": "Aerospike/Vagrant"
         },
         "kafka-01.example.com": {
@@ -426,7 +436,7 @@
         },
         "metrics.example.com": {
             "ip": "192.168.36.20",
-            "box": "puppetlabs/centos-7.2-64-puppet",
+            "box": "centos/7",
             "ports": [
                 {
                     "host": 8083,
@@ -439,11 +449,15 @@
                     "id": "rest"
                 }
             ],
-            "hostgroup": "Metrics"
+            "hostgroup": "Metrics",
+            "host_parameters": {
+                "role": "METRICS_SERVER"
+            }
         },
         "graph.example.com": {
             "ip": "192.168.36.21",
-            "classes": "profiles::grafana",
+            "ignore-box": "centos/6",
+            "classes": "roles,repos",
             "ports": [
                 {
                     "host": 8080,
@@ -452,7 +466,7 @@
                 }
             ],
             "host_parameters": {
-                "role": "GRAPHING_SERVER"
+                "role": "GRAFANA"
             }
         },
         "datascience.example.com": {
