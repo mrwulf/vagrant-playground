@@ -41,6 +41,7 @@ else
     # Set Up hiera
     rm -f /etc/puppetlabs/puppet/hiera.yaml
     ln -s /etc/puppetlabs/code/environments/hieradata/hiera.yaml /etc/puppetlabs/puppet/hiera.yaml
+    sudo /opt/puppetlabs/bin/puppetserver gem install hiera-eyaml
 
     # Make puppet easier to use
     if [ ! -f /usr/bin/puppet ]
