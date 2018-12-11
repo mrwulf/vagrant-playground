@@ -90,3 +90,5 @@ build/
 
 # Workspace
 Workspace/
+*.code-workspace
+Puppet Workspace.code-workspace

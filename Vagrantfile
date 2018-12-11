@@ -5,7 +5,7 @@ CONFIG_FILE = 'nodes.json'
 FOREMAN     = 'theforeman.example.com'
 WORKSPACE   = 'Workspace'
 PUPPET_REPO = "#{WORKSPACE}/puppet/"
-HIERA_REPO  = "#{WORKSPACE}/hiera/"
+HIERA_REPO  = "#{WORKSPACE}/puppet/data"
 
 ENV["VAGRANT_DEFAULT_PROVIDER"] = 'virtualbox'
 
